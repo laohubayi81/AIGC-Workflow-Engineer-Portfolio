@@ -37,7 +37,7 @@ config:
         lr: 1e-4
         dtype: bf16
       model:
-        name_or_path: "<PUT_KREA2_RAW_SAFETENSORS>"
+        name_or_path: "krea2_raw_fp8_scaled.safetensors"
         arch: "krea2"
         quantize: true
         quantize_te: true
