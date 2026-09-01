@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# Weights / large binaries (keep samples small)
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.gguf
+*.onnx
+*.npz
+
+# Datasets and generated media
+datasets/
+data/raw/
+outputs/
+output/
+*.mp4
+*.webm
+*.wav
+*.zip
+*.7z
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ComfyUI / training runtime
+temp/
+wandb/
+*.log
