@@ -1,0 +1,64 @@
+---
+# Krea 2 LoRA — 16GB. Copy to AI-Toolkit config/ and fill model path before training.
+# Do NOT set is_flux: Krea 2 is arch krea2 (Qwen3-VL + MMDiT), not Flux.
+job: extension
+config:
+  name: "krea2_ohwx_person"
+  process:
+    - type: sd_trainer
+      training_folder: "output"
+      device: cuda:0
+      network:
+        type: "lora"
+        linear: 32
+        linear_alpha: 16
+      save:
+        dtype: float16
+        save_every: 200
+        max_step_saves_to_keep: 6
+      datasets:
+        - folder_path: "<PUT_IMAGES_DIR>"
+          caption_ext: "txt"
+          caption_dropout_rate: 0.05
+          shuffle_tokens: false
+          cache_latents_to_disk: true
+          cache_text_embeddings: true
+          resolution: [768]
+      train:
+        batch_size: 1
+        cache_text_embeddings: true
+        steps: 1200
+        gradient_accumulation: 1
+        train_unet: true
+        train_text_encoder: false
+        gradient_checkpointing: true
+        noise_scheduler: "flowmatch"
+        optimizer: "adamw8bit"
+        lr: 1e-4
+        dtype: bf16
+      model:
+        name_or_path: "<PUT_KREA2_RAW_SAFETENSORS>"
+        arch: "krea2"
+        quantize: true
+        quantize_te: true
+        qtype_te: "qfloat8"
+        low_vram: true
+      sample:
+        sampler: "flowmatch"
+        sample_every: 200
+        sample_start_step: 0
+        width: 768
+        height: 768
+        prompts:
+          - "ohwx person, a young East Asian man with short black hair, wearing a white t-shirt, looking at the camera, indoor photo"
+          - "ohwx person, a young East Asian man with short black hair, wearing rectangular glasses and a beige shirt, slight smile"
+          - "ohwx person, a young East Asian man in left profile, short black hair, light blue polo shirt"
+          - "photo of ohwx person, white background, medium shot, studio lighting"
+        neg: ""
+        seed: 42
+        walk_seed: true
+        guidance_scale: 3
+        sample_steps: 25
+meta:
+  name: "[name]"
+  version: "1.0"
