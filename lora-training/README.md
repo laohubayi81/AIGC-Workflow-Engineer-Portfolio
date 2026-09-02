@@ -16,7 +16,7 @@
 
 ## 技术栈
 
-- 训练：ostris/ai-toolkit（本机独立安装，不进本仓库）
+- 训练：ostris/ai-toolkit（安装于 `D:\ai-toolkit`，不进本仓库）
 - 推理：ComfyUI + Krea 2 Turbo
 - 打标：自然语言 caption
 
@@ -26,4 +26,4 @@
 
 ## 性能 / 成本
 
-环境基线：[../workflows/benchmarks/env.md](../workflows/benchmarks/env.md)。训练耗时与显存在首次跑通后按规范补。
+环境基线：[benchmarks/2026-09-01-environment.md](./benchmarks/2026-09-01-environment.md)。训练耗时与显存在首次跑通后按规范补。

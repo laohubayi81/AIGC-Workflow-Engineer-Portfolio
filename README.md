@@ -26,4 +26,4 @@
 | [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | 未开始 |
 | [agent-project](./agent-project/) | Agent 最小状态机闭环 | 未开始 |
 
-环境版本与模型清单见 [workflows/benchmarks/env.md](./workflows/benchmarks/env.md)。
+环境版本与模型清单见 [lora-training/benchmarks/2026-09-01-environment.md](./lora-training/benchmarks/2026-09-01-environment.md)。
