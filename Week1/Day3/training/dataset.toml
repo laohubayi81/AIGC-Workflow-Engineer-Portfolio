@@ -1,0 +1,13 @@
+# Krea 2 人物 LoRA 数据集配置 — 按 training_report.md §3.3 重建
+# 云端路径 /root/... 需按实际环境调整
+
+[general]
+resolution = [768, 768]
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = false
+
+[[datasets]]
+image_directory = "/root/datasets/self/images"
+cache_directory = "/root/datasets/self/cache"
+num_repeats = 1

@@ -4,7 +4,7 @@
 
 - GitHub：https://github.com/laohubayi81/AIGC-Workflow-Engineer-Portfolio
 - 硬件：NVIDIA GeForce RTX 5080 Laptop GPU 16GB + 32GB RAM
-- 当前进度：**第 1 周 Day 1**（建仓 + 环境记录 + AI-Toolkit 安装）
+- 当前进度：**第 1 周 Day 3 完成**（Krea 2 人物 LoRA 训练 + 评估，[训练报告](./Week1/Day3/training_report.md)）
 
 ## 技能栈
 
@@ -12,7 +12,7 @@
 |---|---|
 | ComfyUI | 本地已跑通 Krea 2 Turbo（NVFP4）与 LTX 2.3 量化版 |
 | Agent / RAG | 有实际项目经验，第 5 周接到 ComfyUI 调度闭环 |
-| LoRA 训练 | 未完成。第 1 周只做 Krea 2 单模型 |
+| LoRA 训练 | Krea 2 单模型已跑通（39 张自拍 → 人物 LoRA，云训练 48 分钟，评估完成） |
 | API / 批量 | 未开始（第 2 周） |
 | 视频流水线 | 仅文生视频基线，专项未做（第 3 周） |
 | Docker / 云端 | 未开始（第 4 周） |
@@ -21,7 +21,7 @@
 
 | 模块 | 说明 | 状态 |
 |---|---|---|
-| [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参记录 | Day 1 进行中 |
+| [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参记录 | 第 1 周完成（Day 3） |
 | [workflows](./workflows/) | 图像生产工作流 + 视频生产流水线 | 未开始 |
 | [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | 未开始 |
 | [agent-project](./agent-project/) | Agent 最小状态机闭环 | 未开始 |

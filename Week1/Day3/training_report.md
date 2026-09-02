@@ -315,8 +315,8 @@ num_repeats = 1
 
 | 文件 | 说明 |
 |------|------|
-| dataset.toml | 数据集配置文件 |
-| training_command.sh | 完整训练命令 |
+| dataset.toml | 数据集配置文件（已按本报告重建入库：[training/dataset.toml](./training/dataset.toml)） |
+| training_command.sh | 完整训练命令（已按本报告重建入库：[training/training_command.sh](./training/training_command.sh)） |
 | krea2_raw_lora_test.json | ComfyUI 推理工作流 |
 | events.out.tfevents.* | TensorBoard 训练日志 |
 
@@ -324,12 +324,13 @@ num_repeats = 1
 
 ```
 Week1/Day3/samples/
-├── 正面/           # 正面证件照（含无LoRA对比、4个checkpoint）
-├── 侧面/           # 侧面（4个checkpoint）
-├── 微笑/           # 微笑（4个checkpoint）
-├── 户外/           # 户外（4个checkpoint）
-├── 全身/           # 全身（4个checkpoint）
-└── 艺术感/         # 艺术感（4个checkpoint）
+├── comparison/     # 无LoRA vs 有LoRA对比（step900, seed42，git 中保留）
+├── front/          # 正面证件照（含 CFG 3/4/7 对比、4个checkpoint）
+├── side/           # 侧面（4个checkpoint）
+├── smile/          # 微笑（4个checkpoint）
+├── outdoor/        # 户外（4个checkpoint）
+├── fullbody/       # 全身（4个checkpoint）
+└── artistic/       # 艺术感（4个checkpoint）
 ```
 
 ---

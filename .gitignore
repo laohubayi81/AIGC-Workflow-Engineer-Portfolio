@@ -40,9 +40,9 @@ wandb/
 *.log
 
 # Day3 samples: keep only no-LoRA vs with-LoRA comparison, exclude 6-scene detailed samples
-Week1/Day3/samples/正面/
-Week1/Day3/samples/侧面/
-Week1/Day3/samples/微笑/
-Week1/Day3/samples/户外/
-Week1/Day3/samples/全身/
-Week1/Day3/samples/艺术感/
+Week1/Day3/samples/front/
+Week1/Day3/samples/side/
+Week1/Day3/samples/smile/
+Week1/Day3/samples/outdoor/
+Week1/Day3/samples/fullbody/
+Week1/Day3/samples/artistic/
