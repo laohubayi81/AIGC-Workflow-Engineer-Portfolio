@@ -36,13 +36,16 @@ config:
         optimizer: "adamw8bit"
         lr: 1e-4
         dtype: bf16
+        skip_first_sample: true
+        disable_sampling: true
       model:
-        name_or_path: "krea2_raw_fp8_scaled.safetensors"
+        name_or_path: "krea2_raw_int8_convrot.safetensors"
         arch: "krea2"
         quantize: true
+        qtype: "convrot8"
         quantize_te: true
         qtype_te: "qfloat8"
-        low_vram: true
+        low_vram: false
       sample:
         sampler: "flowmatch"
         sample_every: 200
