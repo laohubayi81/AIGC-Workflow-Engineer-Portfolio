@@ -6,12 +6,15 @@
 
 ## 🎯 当前位置（最后更新：2026-09-03）
 
-- **位置**：**Week 1 · Day 4 完成**（评估三件套已落库，仅剩 Day 5 集成 + Day 7 复盘）
-- **刚完成**：权重扫描（InsightFace 相似度随 strength 0.5→1.2 单调升 0.41→0.67，0.85 为平衡点）；触发词泄漏 2×2 矩阵量化确认（无触发词 0.57 vs 无 LoRA 基线 0.05）；InsightFace 评估入库——Week 1 完成标准②③④达成
-- **下一步（Day 5）**：
-  1. ComfyUI 集成工作流：Krea 2 + 自训 LoRA + ControlNet（Depth 或 OpenPose 选一）
-  2. 加 IP-Adapter（角色参考），理解 ControlNet 控结构 / IP-Adapter 做参考迁移 / LoRA 注特征 三者边界
-  3. 产出：集成工作流 JSON + 效果对比图 + 边界说明，存入 `lora-training/`
+- **位置**：**Week 1 · Day 5 待开工**（Day 4 评估已收尾推送）
+- **Day 5 可行性探测已完成（09-03），计划修订**：
+  - ❌ **ControlNet**：本地 `models/controlnet/` 为空；ComfyUI 唯一的 Qwen 系 ControlNet（DiffSynth）面向 Qwen-Image 底模，与 Krea 2（12.9B 另一套 DiT 维度）大概率不兼容，无 Krea 2 专用 CN 迹象
+  - ❌ **IP-Adapter**：IPAdapter Plus 只支持 SD1.5/SDXL/Flux 系，无 Krea 2 版本，节点未装
+  - ✅ **替代主路线**：Krea 2 + myface LoRA + **krea2edit Identity Edit**（`comfyui-krea2edit` 节点 + `krea2_identity_edit_v1_2.safetensors` 已就绪）——参考图定构图、LoRA 保身份，零下载
+- **Day 5 执行清单**：
+  1. 主路线：搭 `Krea2EditModelPatch` + `Krea2EditGroundedEncode` + myface LoRA 工作流，出 ref_boost 0.5 / 1.0 / 1.5 对比图
+  2. 支线（可选，≤1h）：下载一个 Qwen DiffSynth CN 实测挂 Krea 2，报错留证
+  3. 产出：集成工作流 JSON + 对比图 + 组件边界表写入 `lora-training/`（若将来有 Krea 2 官方 CN，人像选 OpenPose > Depth，Canny 不适合人像）
 
 ---
 
@@ -21,7 +24,7 @@
 - [x] Day 2 · 数据集（39 张自拍）+ 自然语言打标（Qwen3-VL caption，触发词 ohwx）
 - [x] Day 3 · 训练 1200 步（Musubi Tuner v0.3.4 · 恒源云 4090D · 48 min）+ 6 场景评估 + [训练报告](Week1/Day3/training_report.md)
 - [x] Day 4 · 权重扫描（0.5–1.2）+ 触发词泄漏验证 + InsightFace 评估——0.41→0.67 单调升；泄漏确认（无触发词 0.57 vs 基线 0.05）
-- [ ] Day 5 · 推理端集成：ControlNet（Depth 或 OpenPose）+ IP-Adapter + LoRA 工作流 JSON，理解三者边界
+- [ ] Day 5 · 推理端集成（已按探测修订）：krea2edit Identity Edit + myface LoRA 工作流 JSON + 组件边界表；ControlNet/IP-Adapter 确认无 Krea 2 方案（可选实测留证）
 - [ ] Day 6 · 缓冲（可选：训 rank=16 对照，"应该完成"项）
 - [ ] Day 7 · 周复盘（见下方清单）
 
@@ -119,6 +122,7 @@
 |---|---|---|
 | 09-02 | Day 3 训练改用 Musubi Tuner v0.3.4 + 恒源云 RTX 4090D（计划为本地 AI-Toolkit 16GB） | 本地 16GB 走 AI-Toolkit 未跑通，按计划"环境装不上→云端租卡"兜底；产物等价：768px + cached + 1200 步 |
 | 09-03 | 训练配置按报告重建入库（云端原始 dataset.toml / 训练命令未保存） | 见 [Week1/Day3/training/README.md](Week1/Day3/training/README.md) |
+| 09-03 | Day 5 集成方案修订：ControlNet / IP-Adapter 对 Krea 2 均无可用方案（探测：本地无 CN 权重；Qwen DiffSynth CN 面向 Qwen-Image 架构；IPAdapter Plus 只支持 SD1.5/SDXL/Flux） | 改用 Krea 2 原生 krea2edit Identity Edit 做参考迁移（节点与 LoRA 已就绪）；组件边界表随 Day 5 产出 |
 
 ## 🗒 面试反哺记录
 
