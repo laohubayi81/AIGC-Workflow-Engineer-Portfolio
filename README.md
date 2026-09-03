@@ -71,8 +71,8 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - [x] Day 3 · 云端训练 1200 步（48 min）+ 6 场景效果评估
 - [x] Day 4 · InsightFace 相似度评估（权重扫描 0.41→0.67）+ 触发词泄漏验证（0.57 vs 基线 0.05）
 - [x] Day 5 · Depth CN-LoRA + krea2edit Identity Edit 集成（IP-Adapter 无 Krea 2 方案）
-- [ ] Day 6 · 缓冲 / 补漏
-- [ ] Day 7 · 周复盘
+- [x] Day 6 · 缓冲（跳过 rank=16 对照，完成标准不要求）
+- [x] Day 7 · 周复盘（AutoDL 成本 1.74 元 + Day 5 产物入库）
 
 完整 6 周路线图与逐日执行状态 → **[ROADMAP.md](./ROADMAP.md)**（打开项目先看这里）
 

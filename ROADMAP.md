@@ -4,9 +4,9 @@
 
 ---
 
-## 🎯 当前位置（最后更新：2026-09-03 傍晚）
+## 🎯 当前位置（最后更新：2026-09-03 夜）
 
-- **位置**：**Week 1 · Day 5 关账** → 下一步 Day 6 缓冲 / Day 7 周复盘
+- **位置**：**Week 1 完成**（Day 1–5 交付 + Day 6 跳过 rank=16 + Day 7 复盘已提交）→ 下一步 **Week 2 · Day 8** 图像生产工作流
 - **Day 5 可行性探测（09-03）+ 复核修正（09-03，用户纠错 → 检索证实）**：
   - ✅ **ControlNet（复核修正，恢复集成）**：Krea 2 的 CN 以 **ControlNet-LoRA** 形态实现——文件放 `models/loras/`、经自定义节点加载（原探测只查 `models/controlnet/` 与传统 CN 形态，搜索框架错误导致漏判）：
     - **Depth**：HF `Patil/Krea-2-depth-controlnet`（862MB rank64 + expanded input projection；Raw / Turbo 通吃；深度一致性 Pearson 0.98 无 prompt / 0.99 有 prompt）
@@ -26,19 +26,19 @@
   - ✅ 路线 B v3：公园近景、看镜头。strength 1.0 更贴自拍取景（身份 0.66）；0.6 更听 prompt（0.55）。深度近白远黑。v2 全身侧拍对打出「草地后脑勺」，作压力测试反例保留。
   - ✅ 路线 A v2：identity_edit LoRA @1.0 + myface @0.85，prompt 为编辑指令。ref_boost 1.0/4.0/8.0 都完成白底黑 T；身份 vs 00001 为 0.68→0.69→0.73。第一轮未挂专用 LoRA 的蜡像图作废。
   - ✅ 组件边界表已写入 Day 5 README。stretch（A+B+myface 三重）未跑。OpenPose 未测。推理全程 RAW FP8，未跑 Turbo / NVFP4。
-  - **下一步**：Day 6 缓冲（可选 rank=16 对照）或直接 Day 7 周复盘（云端费用、偏差表、样张入库）
+  - **下一步**：已进入 Week 2 Day 8（数字人写真生产工作流，待确认场景后开工）
 
 ---
 
-## Week 1 · Krea 2 LoRA 训练（Day 1–7）🚧 进行中
+## Week 1 · Krea 2 LoRA 训练（Day 1–7）✅ 完成
 
 - [x] Day 1 · 建仓 + 环境记录 + AI-Toolkit 安装
 - [x] Day 2 · 数据集（39 张自拍）+ 自然语言打标（Qwen3-VL caption，触发词 ohwx）
 - [x] Day 3 · 训练 1200 步（Musubi Tuner v0.3.4 · 恒源云 4090D · 48 min）+ 6 场景评估 + [训练报告](Week1/Day3/training_report.md)
 - [x] Day 4 · 权重扫描（0.5–1.2）+ 触发词泄漏验证 + InsightFace 评估——0.41→0.67 单调升；泄漏确认（无触发词 0.57 vs 基线 0.05）
 - [x] Day 5 · 推理端集成：路线 A krea2edit Identity Edit（ref_boost 1/4/8）+ 路线 B Depth CN-LoRA（strength 0.6/1.0）+ 组件边界表；IP-Adapter 无方案已留证；stretch 未跑
-- [ ] Day 6 · 缓冲（可选：训 rank=16 对照，"应该完成"项）
-- [ ] Day 7 · 周复盘（见下方清单）
+- [x] Day 6 · 缓冲：**跳过** rank=16 对照（完成标准不要求；现有 myface 是 rank 32。再训要重新租卡，本周不做）
+- [x] Day 7 · 周复盘：AutoDL 成本 1.74 元入库；偏差表已更新；Day 5 JSON / 样张 / 报告已推 GitHub（`24d579f`）
 
 **Week 1 完成标准**：
 
@@ -49,7 +49,7 @@
 - [x] ⑤ ControlNet（CN-LoRA 形态）/ Identity Edit / LoRA 集成工作流（IP-Adapter 无方案已留证）
 - [x] ⑥ lora-training 模块完整，含 benchmark 数据（含 [训练成本 1.74 元](lora-training/benchmarks/2026-09-03-training-cost.md)）
 
-**Day 7 复盘清单**：云端训练成本已按 AutoDL 2.18 元/h × 48 min = 1.74 元写入 `benchmarks/`；偏差表已更新；样张 / 报告 / 工作流 JSON **待提交 GitHub**。
+**Day 7 复盘清单**：云端训练成本已按 AutoDL 2.18 元/h × 48 min = 1.74 元写入 `benchmarks/`；偏差表已更新；样张 / 报告 / 工作流 JSON 已提交（`24d579f`）。
 
 ---
 
@@ -134,6 +134,7 @@
 |---|---|---|
 | 09-02 | Day 3 训练改用 Musubi Tuner v0.3.4 + 云端 RTX 4090D（计划为本地 AI-Toolkit 16GB） | 本地 16GB 走 AI-Toolkit 未跑通，按计划"环境装不上→云端租卡"兜底；产物等价：768px + cached + 1200 步 |
 | 09-03 | 训练成本按 AutoDL 2.18 元/h 入账（48 min → 1.74 元），Day 3 报告写的是恒源云 seetacloud | 无订单截图；单价为用户口述。平台名称两处不一致，成本不以估算冒充实付 |
+| 09-03 | Day 6 跳过 rank=16 对照 | 完成标准不要求。现网 LoRA 为 rank 32；再训 16 需重新租 4090D，本周把时间留给 Week 2 生产工作流 |
 | 09-03 | 训练配置按报告重建入库（云端原始 dataset.toml / 训练命令未保存） | 见 [Week1/Day3/training/README.md](Week1/Day3/training/README.md) |
 | 09-03 | Day 5 集成方案修订：ControlNet / IP-Adapter 对 Krea 2 均无可用方案（探测：本地无 CN 权重；Qwen DiffSynth CN 面向 Qwen-Image 架构；IPAdapter Plus 只支持 SD1.5/SDXL/Flux） | 改用 Krea 2 原生 krea2edit Identity Edit 做参考迁移（节点与 LoRA 已就绪）；组件边界表随 Day 5 产出 |
 | 09-03 | Day 5 探测结论复核修正：Krea 2 存在 **ControlNet-LoRA** 形态的 CN（Depth / OpenPose），上条"无 Krea 2 CN 方案"结论有误 | 原探测只查了本地 `models/controlnet/` 与传统 CN 形态，而 CN-LoRA 实际放 `models/loras/`、经自定义节点（facok/comfyui-krea2-controlnet）加载，搜索框架不完整导致漏判。恢复 v4 计划的 CN 集成项，与 krea2edit 并行 A/B 测试（证据：HF `Patil/Krea-2-depth-controlnet`、comfyui-wiki 2026-07-03 发布新闻、RunComfy 节点页） |
