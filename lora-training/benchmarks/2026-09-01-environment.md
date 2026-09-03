@@ -60,7 +60,7 @@ Installer manifest 仍写 `v0.20.1-env1`，实际仓库已更新到 0.28.2，以
 | `vae/ltx-2.3-22b-distilled_audio_vae.safetensors` | LTX 音频 VAE |
 | `latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.0.safetensors` | LTX 空间超分 |
 
-**缺口（训练前必须补）：** 本机目前只有 Krea 2 **Turbo NVFP4**，没有 Krea 2 **Raw**。计划要求 Raw 训 LoRA、Turbo 推理。Day 3 训练前需下载 Raw，或明确改用 Turbo + training adapter 并在日志里写清。
+**缺口（Day 1 当时）：** 扫描时磁盘上有 Turbo NVFP4、还没有 Raw。之后补了 `krea2_raw_fp8_scaled.safetensors`。Week 1 **推理全程 RAW FP8**，从未用 NVFP4。
 
 ## AI-Toolkit（Day 1 已冒烟）
 

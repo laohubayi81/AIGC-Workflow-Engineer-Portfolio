@@ -17,8 +17,9 @@
 | 基座模型 | Krea 2 RAW（BF16 训练 / FP8 推理） |
 | 训练工具 | Musubi Tuner v0.3.4（kohya-ss 出品） |
 | 推理框架 | ComfyUI（原生 Krea 2 支持） |
-| 云平台 | 恒源云 seetacloud（北京机房） |
+| 云平台 | 恒源云 seetacloud（北京机房；成本按 AutoDL 单价补记，见下） |
 | 硬件 | RTX 4090D 24GB / 18核 AMD EPYC / 60GB 内存 |
+| 成本 | AutoDL 2.18 元/h × 48 min = **1.74 元**（[2026-09-03 补记](../../lora-training/benchmarks/2026-09-03-training-cost.md)） |
 
 ---
 

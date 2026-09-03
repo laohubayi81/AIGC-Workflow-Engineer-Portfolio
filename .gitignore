@@ -35,6 +35,10 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Local scratch / agent notes (do not publish)
+.tmp_dl/
+.workbuddy/
+
 # ComfyUI / training runtime
 temp/
 wandb/

@@ -1,0 +1,280 @@
+{
+  "last_node_id": 15,
+  "last_link_id": 20,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [50, 50],
+      "size": [320, 100],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [1], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "UNETLoader"},
+      "widgets_values": ["krea2_raw_fp8_scaled.safetensors", "default"]
+    },
+    {
+      "id": 2,
+      "type": "LoraLoaderModelOnly",
+      "pos": [400, 50],
+      "size": [320, 100],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [2], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "LoraLoaderModelOnly"},
+      "widgets_values": ["krea2_identity_edit_v1_2.safetensors", 1.0]
+    },
+    {
+      "id": 15,
+      "type": "LoraLoaderModelOnly",
+      "pos": [720, 50],
+      "size": [320, 100],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 2}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [20], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "LoraLoaderModelOnly"},
+      "widgets_values": ["myface_krea2_lora.safetensors", 0.85]
+    },
+    {
+      "id": 3,
+      "type": "CLIPLoader",
+      "pos": [50, 200],
+      "size": [320, 100],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "CLIP", "type": "CLIP", "links": [3, 4], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "CLIPLoader"},
+      "widgets_values": ["qwen3vl_4b_fp8_scaled.safetensors", "krea2"]
+    },
+    {
+      "id": 4,
+      "type": "Krea2EditGroundedEncode",
+      "pos": [450, 150],
+      "size": [420, 200],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3},
+        {"name": "image", "type": "IMAGE", "link": 14}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [5], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "Krea2EditGroundedEncode"},
+      "widgets_values": ["keep this person's face and identity, change the background to a plain white studio backdrop, change the outfit to a black t-shirt, photorealistic", 768, ""]
+    },
+    {
+      "id": 5,
+      "type": "Krea2EditGroundedEncode",
+      "pos": [450, 420],
+      "size": [420, 160],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 4},
+        {"name": "image", "type": "IMAGE", "link": 15}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "Krea2EditGroundedEncode"},
+      "widgets_values": ["", 768, ""]
+    },
+    {
+      "id": 6,
+      "type": "VAELoader",
+      "pos": [50, 350],
+      "size": [320, 60],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "VAE", "type": "VAE", "links": [7, 8, 9], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VAELoader"},
+      "widgets_values": ["qwen_image_vae.safetensors"]
+    },
+    {
+      "id": 7,
+      "type": "EmptySD3LatentImage",
+      "pos": [50, 450],
+      "size": [320, 100],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [10, 11], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "EmptySD3LatentImage"},
+      "widgets_values": [768, 768, 1]
+    },
+    {
+      "id": 8,
+      "type": "LoadImage",
+      "pos": [50, 560],
+      "size": [320, 314],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [12, 13, 14, 15], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["00027.jpg", "image"]
+    },
+    {
+      "id": 9,
+      "type": "VAEEncode",
+      "pos": [450, 640],
+      "size": [220, 60],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {"name": "pixels", "type": "IMAGE", "link": 12},
+        {"name": "vae", "type": "VAE", "link": 8}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [16], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VAEEncode"}
+    },
+    {
+      "id": 10,
+      "type": "Krea2EditModelPatch",
+      "pos": [900, 50],
+      "size": [340, 240],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 20},
+        {"name": "source_latent", "type": "LATENT", "link": 16},
+        {"name": "vae", "type": "VAE", "link": 9},
+        {"name": "source_image", "type": "IMAGE", "link": 13},
+        {"name": "target_latent", "type": "LATENT", "link": 11}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [17], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "Krea2EditModelPatch"},
+      "widgets_values": [1.0, 1.0, "fit"]
+    },
+    {
+      "id": 11,
+      "type": "KSampler",
+      "pos": [1280, 50],
+      "size": [320, 280],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 17},
+        {"name": "positive", "type": "CONDITIONING", "link": 5},
+        {"name": "negative", "type": "CONDITIONING", "link": 6},
+        {"name": "latent_image", "type": "LATENT", "link": 10}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [18], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [42, "fixed", 28, 5.5, "euler", "normal", 1]
+    },
+    {
+      "id": 12,
+      "type": "VAEDecode",
+      "pos": [1280, 380],
+      "size": [220, 60],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 18},
+        {"name": "vae", "type": "VAE", "link": 7}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [19], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"}
+    },
+    {
+      "id": 13,
+      "type": "SaveImage",
+      "pos": [1280, 480],
+      "size": [320, 280],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 19}
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": ["Krea2_Day5A_v2_refboost_1.0"]
+    },
+    {
+      "id": 14,
+      "type": "Note",
+      "pos": [450, 860],
+      "size": [520, 240],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": ["Day 5 路线 A v2 · 先挂 identity_edit LoRA，再挂 myface\n\nprompt 是编辑指令（白底+黑T），不是文生图。\nref_boost 扫 1.0 / 4.0（官方推荐）/ 8.0。\n越高越贴 00027 的木门和卡其衬衫；越低越听编辑指令。"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "MODEL"],
+    [2, 2, 0, 15, 0, "MODEL"],
+    [20, 15, 0, 10, 0, "MODEL"],
+    [3, 3, 0, 4, 0, "CLIP"],
+    [4, 3, 0, 5, 0, "CLIP"],
+    [5, 4, 0, 11, 1, "CONDITIONING"],
+    [6, 5, 0, 11, 2, "CONDITIONING"],
+    [7, 6, 0, 12, 1, "VAE"],
+    [8, 6, 0, 9, 1, "VAE"],
+    [9, 6, 0, 10, 2, "VAE"],
+    [10, 7, 0, 11, 3, "LATENT"],
+    [11, 7, 0, 10, 4, "LATENT"],
+    [12, 8, 0, 9, 0, "IMAGE"],
+    [13, 8, 0, 10, 3, "IMAGE"],
+    [14, 8, 0, 4, 1, "IMAGE"],
+    [15, 8, 0, 5, 1, "IMAGE"],
+    [16, 9, 0, 10, 1, "LATENT"],
+    [17, 10, 0, 11, 0, "MODEL"],
+    [18, 11, 0, 12, 0, "LATENT"],
+    [19, 12, 0, 13, 0, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
