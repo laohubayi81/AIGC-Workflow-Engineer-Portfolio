@@ -38,6 +38,12 @@ Thumbs.db
 # Local scratch / agent notes (do not publish)
 .tmp_dl/
 .workbuddy/
+workflows/queue/runs/
+
+# Grok local (keep project skills only)
+.grok/*
+!.grok/skills/
+!.grok/skills/**
 
 # ComfyUI / training runtime
 temp/

@@ -1,0 +1,19 @@
+{
+  "1": {"class_type": "UNETLoader", "inputs": {"unet_name": "krea2_raw_fp8_scaled.safetensors", "weight_dtype": "default"}},
+  "2": {"class_type": "LoraLoaderModelOnly", "inputs": {"lora_name": "myface_krea2_lora.safetensors", "strength_model": 0.85, "model": ["1", 0]}},
+  "3": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen3vl_4b_fp8_scaled.safetensors", "type": "krea2"}},
+  "4": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["3", 0], "text": "ohwx, close-up portrait of a person in a sunlit park, looking at camera, trees in the background, photorealistic, sharp focus, 8k"}},
+  "5": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["3", 0], "text": "blurry, low quality, distorted, ugly, deformed, extra fingers, bad anatomy"}},
+  "6": {"class_type": "VAELoader", "inputs": {"vae_name": "qwen_image_vae.safetensors"}},
+  "7": {"class_type": "EmptySD3LatentImage", "inputs": {"width": 768, "height": 768, "batch_size": 1}},
+  "8": {"class_type": "KSampler", "inputs": {"seed": 42, "steps": 28, "cfg": 5.5, "sampler_name": "euler", "scheduler": "normal", "denoise": 1, "model": ["11", 0], "positive": ["4", 0], "negative": ["5", 0], "latent_image": ["7", 0]}},
+  "9": {"class_type": "VAEDecode", "inputs": {"samples": ["8", 0], "vae": ["6", 0]}},
+  "10": {"class_type": "Krea2ControlLoRALoader", "inputs": {"model": ["2", 0], "lora_name": "depth-control-lora.safetensors", "strength": 0.8}},
+  "11": {"class_type": "Krea2ControlApply", "inputs": {"model": ["10", 0], "control_latent": ["13", 0]}},
+  "16": {"class_type": "LoadImage", "inputs": {"image": "00027.jpg"}},
+  "18": {"class_type": "ImageScale", "inputs": {"image": ["16", 0], "upscale_method": "lanczos", "width": 768, "height": 768, "crop": "center"}},
+  "12": {"class_type": "DepthAnythingV2Preprocessor", "inputs": {"image": ["18", 0], "ckpt_name": "depth_anything_v2_vits.pth", "resolution": 768}},
+  "13": {"class_type": "Krea2ControlImageEncode", "inputs": {"control_image": ["12", 0], "vae": ["6", 0], "latent": ["7", 0], "resize": "match_latent_size", "upscale_method": "lanczos", "crop": "center", "channel_mode": "grayscale", "normalize": "per_image_minmax", "invert": false, "batch_mode": "independent_images"}},
+  "14": {"class_type": "SaveImage", "inputs": {"images": ["13", 1], "filename_prefix": "Api_portrait_depth"}},
+  "15": {"class_type": "SaveImage", "inputs": {"images": ["9", 0], "filename_prefix": "Api_portrait"}}
+}

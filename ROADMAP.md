@@ -6,7 +6,7 @@
 
 ## 🎯 当前位置（最后更新：2026-09-03 夜）
 
-- **位置**：**Week 1 完成**（Day 1–5 交付 + Day 6 跳过 rank=16 + Day 7 复盘已提交）→ 下一步 **Week 2 · Day 8** 图像生产工作流
+- **位置**：**Week 2 完成**（Day 8–12 交付；Day 13 跳过）→ 下一步 **Week 3 · Day 15** 视频模型生态 + 基线实测
 - **Day 5 可行性探测（09-03）+ 复核修正（09-03，用户纠错 → 检索证实）**：
   - ✅ **ControlNet（复核修正，恢复集成）**：Krea 2 的 CN 以 **ControlNet-LoRA** 形态实现——文件放 `models/loras/`、经自定义节点加载（原探测只查 `models/controlnet/` 与传统 CN 形态，搜索框架错误导致漏判）：
     - **Depth**：HF `Patil/Krea-2-depth-controlnet`（862MB rank64 + expanded input projection；Raw / Turbo 通吃；深度一致性 Pearson 0.98 无 prompt / 0.99 有 prompt）
@@ -26,7 +26,7 @@
   - ✅ 路线 B v3：公园近景、看镜头。strength 1.0 更贴自拍取景（身份 0.66）；0.6 更听 prompt（0.55）。深度近白远黑。v2 全身侧拍对打出「草地后脑勺」，作压力测试反例保留。
   - ✅ 路线 A v2：identity_edit LoRA @1.0 + myface @0.85，prompt 为编辑指令。ref_boost 1.0/4.0/8.0 都完成白底黑 T；身份 vs 00001 为 0.68→0.69→0.73。第一轮未挂专用 LoRA 的蜡像图作废。
   - ✅ 组件边界表已写入 Day 5 README。stretch（A+B+myface 三重）未跑。OpenPose 未测。推理全程 RAW FP8，未跑 Turbo / NVFP4。
-  - **下一步**：已进入 Week 2 Day 8（数字人写真生产工作流，待确认场景后开工）
+  - **下一步**：拖 `workflows/digital_portrait.json` 进 ComfyUI，用 `00027.jpg` Queue 一张公园成片；通过后可换棚拍 / 夜景 prompt
 
 ---
 
@@ -53,19 +53,19 @@
 
 ---
 
-## Week 2 · 图像生产工作流 + API 封装 + 批量队列（Day 8–14）
+## Week 2 · 图像生产工作流 + API 封装 + 批量队列（Day 8–14）✅ 完成
 
 **核心目标**：10+ 节点图像生产工作流 + Python API 封装模块 + 单实例批量队列（100+ 任务）+ 一套真实性能成本数据。
 
-- [ ] Day 8 · 从零设计图像生产工作流（选业务场景：电商产品图 / 数字人写真 / 营销素材；覆盖 预处理 → ControlNet → LoRA → 生成 → 后处理 → 输出）→ JSON + 使用说明
-- [ ] Day 9 · 性能优化 + 成本测量（耗时 5 次均值 P50/P90、显存峰值、成功率 20 次、0.4 元/h 单件成本）→ `workflows/benchmarks/`
-- [ ] Day 10 · ComfyUI API 深入（`/prompt`、`/history`、`/view`、`/object_info`、`/ws`；两个坑：前端 workflow ≠ API Format、进度必须走 WebSocket）→ API Format 工作流 + 最小调用脚本
-- [ ] Day 11 · Python API 封装模块（`generate()` / `batch_generate()`、参数校验、指数退避重试、WebSocket 进度回调）
-- [ ] Day 12 · 单实例批量队列（CSV 100+ 任务、串行、状态管理、失败自动重试、日志）→ 实跑 50–100 张出统计报告
-- [ ] Day 13 · 缓冲 / 补漏
-- [ ] Day 14 · 周复盘
+- [x] Day 8 · 数字人写真生产工作流（主干=路线 B：预处理 768 crop → Depth CN 0.8 → myface → 生成 → 成片+深度质检；三场景公园/棚拍/夜景已出片）→ [JSON](workflows/digital_portrait.json) + [说明](workflows/docs/digital-portrait.md)
+- [x] Day 9 · 性能测量：n=20 成功率 100%；均值/P50 **57.3 s**、P90 **57.4 s**；显存峰值 **14238 MiB**；本地 0.4 元/h → **0.006 元/张**（AutoDL 2.18 元/h → 0.035 元/张）→ [数据](workflows/benchmarks/2026-09-03-portrait-bench.md)
+- [x] Day 10 · ComfyUI API：API Format [`portrait_api.json`](workflows/api/portrait_api.json) + 最小脚本 [`generate_portrait.py`](workflows/api/generate_portrait.py)；实测 queued → success 57s，输出 `Api_portrait_*.png`。坑：UI JSON ≠ API；进度靠 `/history` 或 `/ws`
+- [x] Day 11 · `ComfyClient.generate()` / `batch_generate()`：scene 校验、指数退避、`/ws` 进度。实测 studio seed=100：progress 1/28…28/28，57.5s，`Api_portrait_00002_.png`
+- [x] Day 12 · CSV 串行队列 50 张：成功率 100%，单张 57.2 s，续跑 skip=5 有效 → [统计](workflows/benchmarks/2026-09-03-queue-50.md)
+- [x] Day 13 · 缓冲：**跳过**（无必做项；场景库 / 中文 Skill 已作为补强）
+- [x] Day 14 · 周复盘：主 README 补 Week 2 数字与样张；本提交入库 JSON / API / 队列 / benchmark
 
-**完成标准**：① 10+ 节点工作流 ② 性能成本表 ③ API 封装模块 ④ 批量队列脚本 + 统计 ⑤ GitHub workflows 与 agent-project（API 部分）完整
+**完成标准**：① 10+ 节点工作流 ② 性能成本表 ③ API 封装模块 ④ 批量队列脚本 + 统计 ⑤ GitHub workflows 与 agent-project（API 部分）——随本提交齐
 
 ---
 
@@ -135,6 +135,7 @@
 | 09-02 | Day 3 训练改用 Musubi Tuner v0.3.4 + 云端 RTX 4090D（计划为本地 AI-Toolkit 16GB） | 本地 16GB 走 AI-Toolkit 未跑通，按计划"环境装不上→云端租卡"兜底；产物等价：768px + cached + 1200 步 |
 | 09-03 | 训练成本按 AutoDL 2.18 元/h 入账（48 min → 1.74 元），Day 3 报告写的是恒源云 seetacloud | 无订单截图；单价为用户口述。平台名称两处不一致，成本不以估算冒充实付 |
 | 09-03 | Day 6 跳过 rank=16 对照 | 完成标准不要求。现网 LoRA 为 rank 32；再训 16 需重新租 4090D，本周把时间留给 Week 2 生产工作流 |
+| 09-03 | Week 2 写真工作流主干即路线 B，未做真超分后处理 | 面试按「B 的生产封装 + API + 队列」讲，不吹全新流水线。Day 13 跳过 |
 | 09-03 | 训练配置按报告重建入库（云端原始 dataset.toml / 训练命令未保存） | 见 [Week1/Day3/training/README.md](Week1/Day3/training/README.md) |
 | 09-03 | Day 5 集成方案修订：ControlNet / IP-Adapter 对 Krea 2 均无可用方案（探测：本地无 CN 权重；Qwen DiffSynth CN 面向 Qwen-Image 架构；IPAdapter Plus 只支持 SD1.5/SDXL/Flux） | 改用 Krea 2 原生 krea2edit Identity Edit 做参考迁移（节点与 LoRA 已就绪）；组件边界表随 Day 5 产出 |
 | 09-03 | Day 5 探测结论复核修正：Krea 2 存在 **ControlNet-LoRA** 形态的 CN（Depth / OpenPose），上条"无 Krea 2 CN 方案"结论有误 | 原探测只查了本地 `models/controlnet/` 与传统 CN 形态，而 CN-LoRA 实际放 `models/loras/`、经自定义节点（facok/comfyui-krea2-controlnet）加载，搜索框架不完整导致漏判。恢复 v4 计划的 CN 集成项，与 krea2edit 并行 A/B 测试（证据：HF `Patil/Krea-2-depth-controlnet`、comfyui-wiki 2026-07-03 发布新闻、RunComfy 节点页） |

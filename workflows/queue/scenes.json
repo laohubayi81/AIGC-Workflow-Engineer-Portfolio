@@ -1,0 +1,11 @@
+{
+  "park": {
+    "prompt": "ohwx, close-up portrait of a person in a sunlit park, looking at camera, trees in the background, photorealistic, sharp focus, 8k"
+  },
+  "studio": {
+    "prompt": "ohwx, close-up studio portrait of a person, looking at camera, softbox lighting, plain grey backdrop, photorealistic, sharp focus, 8k"
+  },
+  "night": {
+    "prompt": "ohwx, close-up portrait of a person at night, looking at camera, city bokeh lights in the background, photorealistic, sharp focus, 8k"
+  }
+}

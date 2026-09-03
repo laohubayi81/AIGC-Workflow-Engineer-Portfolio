@@ -6,7 +6,7 @@
 
 > 能演示 · 能复现 · 能测量 · 能解释 —— 仓库里所有数字均为实测，没有数据就不写
 
-![Progress](https://img.shields.io/badge/进度-Week%201%20LoRA%20训练-2ea44f?style=flat-square)
+![Progress](https://img.shields.io/badge/进度-Week%202%20写真API%20队列-2ea44f?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Krea%202%20%2F%20LTX%202.3-blue?style=flat-square)
 ![LoRA](https://img.shields.io/badge/LoRA-Musubi%20Tuner%20v0.3.4-orange?style=flat-square)
 ![GPU](https://img.shields.io/badge/本地-RTX%205080%20Laptop%2016GB-8a2be2?style=flat-square)
@@ -46,14 +46,35 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 
 组件边界（身份 / 结构 / 编辑各自由谁负责）→ **[Day 5 报告](Week1/Day5/README.md)**。工作流 JSON：[`day5_routeB_depth_controlnet.json`](lora-training/workflows/day5_routeB_depth_controlnet.json) · [`day5_routeA_krea2edit.json`](lora-training/workflows/day5_routeA_krea2edit.json)。
 
+## ✨ Week 2：数字人写真生产链（API + 队列）
+
+把路线 B 收成可调度的写真：**自拍 → Depth 锁构图 → myface 保身份 → prompt 换场景**。不是新模型，也没有假超分（成片 768）。
+
+| 咖啡馆 | 操场 | 海边（柔光） |
+|---|---|---|
+| ![cafe](workflows/samples/portrait_cafe.png) | ![playground](workflows/samples/portrait_playground.png) | ![beach](workflows/samples/portrait_beach.png) |
+
+| 项 | 实测（RTX 5080 Laptop 16GB · RAW FP8） |
+|---|---|
+| 单张 | **57.3 s**（P50=P90，几乎无长尾） |
+| 显存 | **14238 MiB** |
+| 单张成功率 | 20/20 = **100%** |
+| 队列 | CSV **50/50** 成功，断点续跑有效 |
+| 成本 | 本地估算 **0.006 元/张**；按 AutoDL 2.18 元/h → **0.035 元/张** |
+
+- 画布 JSON：[digital_portrait.json](workflows/digital_portrait.json) · [说明](workflows/docs/digital-portrait.md)
+- HTTP API（UI JSON ≠ API Format）：[portrait_api.json](workflows/api/portrait_api.json) · [`ComfyClient.generate()`](agent-project/src/comfy_client.py)（WebSocket 进度）
+- 场景库可自写中文再存英文 prompt：[scenes.json](workflows/queue/scenes.json) · Skill `digital-portrait`
+- 性能 / 队列统计：[Day 9](workflows/benchmarks/2026-09-03-portrait-bench.md) · [Day 12](workflows/benchmarks/2026-09-03-queue-50.md)
+
 ## 🧭 模块导航
 
 | 模块 | 说明 | 状态 |
 |---|---|---|
-| 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参、推理端集成 | ✅ Day 1–5 完成 |
-| 🖼️ [workflows](./workflows/) | 图像生产工作流 + 视频生产流水线 | ⬜ Week 2–3 |
+| 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参、推理端集成 | ✅ Week 1 |
+| 🖼️ [workflows](./workflows/) | 数字人写真工作流 + API + 队列 | ✅ Week 2 · 视频 ⬜ Week 3 |
 | 🧩 [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | ⬜ Week 4 |
-| 🤖 [agent-project](./agent-project/) | Agent 最小状态机闭环 | ⬜ Week 5 |
+| 🤖 [agent-project](./agent-project/) | Comfy 客户端已落地；Agent 状态机 ⬜ Week 5 | 🚧 API 先行 |
 
 ## 🛠️ 技术栈
 
@@ -62,6 +83,7 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 | 工作流 | ComfyUI（Krea 2 RAW FP8 · LTX 2.3 量化版） |
 | 训练 | Musubi Tuner v0.3.4 · 恒源云 RTX 4090D 24GB（BF16 权重，运行时 FP8） |
 | 推理 | Krea 2 RAW FP8 · Depth CN-LoRA · krea2edit Identity Edit · Qwen3-VL |
+| 调度 | ComfyUI `/prompt` + `/ws` · CSV 串行队列 |
 | 本地环境 | RTX 5080 Laptop 16GB + 32GB RAM（[环境基线](./lora-training/benchmarks/2026-09-01-environment.md)） |
 
 ## 📈 Week 1 进度
@@ -73,6 +95,16 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - [x] Day 5 · Depth CN-LoRA + krea2edit Identity Edit 集成（IP-Adapter 无 Krea 2 方案）
 - [x] Day 6 · 缓冲（跳过 rank=16 对照，完成标准不要求）
 - [x] Day 7 · 周复盘（AutoDL 成本 1.74 元 + Day 5 产物入库）
+
+## 📈 Week 2 进度
+
+- [x] Day 8 · 数字人写真工作流（路线 B 生产封装 + 场景套餐）
+- [x] Day 9 · 性能成本：57.3 s/张 · 13.9GB · 100%
+- [x] Day 10 · API Format + 最小 HTTP 调用
+- [x] Day 11 · `generate()` / WS 进度 / 场景库
+- [x] Day 12 · CSV 队列 50/50
+- [x] Day 13 · 缓冲（跳过，无必做项）
+- [x] Day 14 · 周复盘入库
 
 完整 6 周路线图与逐日执行状态 → **[ROADMAP.md](./ROADMAP.md)**（打开项目先看这里）
 
