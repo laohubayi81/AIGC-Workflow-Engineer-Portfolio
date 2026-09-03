@@ -32,7 +32,7 @@
 
 | 模块 | 说明 | 状态 |
 |---|---|---|
-| 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参记录 | ✅ 训练完成 · 评估进行中 |
+| 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参记录 | ✅ 训练+评估完成 · Day 5 集成中 |
 | 🖼️ [workflows](./workflows/) | 图像生产工作流 + 视频生产流水线 | ⬜ Week 2–3 |
 | 🧩 [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | ⬜ Week 4 |
 | 🤖 [agent-project](./agent-project/) | Agent 最小状态机闭环 | ⬜ Week 5 |
@@ -51,8 +51,8 @@
 - [x] Day 1 · 建仓 + 环境记录 + AI-Toolkit 安装
 - [x] Day 2 · 数据集（39 张自拍）+ 自然语言打标
 - [x] Day 3 · 云端训练 1200 步（48 min）+ 6 场景效果评估
-- [ ] 🚧 Day 4 · InsightFace 相似度评估 + LoRA 权重扫描 + 触发词泄漏验证
-- [ ] Day 5 · ControlNet + IP-Adapter 集成工作流
+- [x] Day 4 · InsightFace 相似度评估（权重扫描 0.41→0.67）+ 触发词泄漏验证（0.57 vs 基线 0.05）
+- [ ] 🚧 Day 5 · ControlNet + IP-Adapter 集成工作流
 - [ ] Day 6 · 缓冲 / 补漏
 - [ ] Day 7 · 周复盘
 
