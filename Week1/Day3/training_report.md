@@ -235,6 +235,43 @@ num_repeats = 1
 
 ---
 
+### 5.4 LoRA 权重扫描（Day 4 补测）
+
+固定 front 场景 / seed 42 / step900 checkpoint / steps 28 / CFG 5.5，扫描 strength：
+
+| strength | InsightFace 相似度 | 目视 |
+|---|---|---|
+| 0.5 | 0.4077 | 身份偏弱，脸部偏柔 |
+| 0.7 | 0.5449 | 身份明确，自然 |
+| 0.85 | 0.5918 | 平衡（原默认值） |
+| 1.0 | 0.6261 | 身份感强 |
+| 1.2 | 0.6661 | 最高，但皮肤纹理开始变硬（过拟合前兆） |
+
+无 LoRA 基线：**0.0494**（基本视为不同人）。样张：`samples/front/front_seed42_s*_step900.png`
+
+**结论**：相似度随 strength 单调上升；0.7–1.0 是身份感与自然度的实用区间，默认 0.85 合理；>1.2 收益递减且质感劣化。
+
+### 5.5 触发词泄漏系统验证（Day 4 补测）
+
+2×2 矩阵（同 seed 42 / step900 / s0.85 / steps 28 / CFG 5.5），相似度 = 与参考自拍的 InsightFace 余弦相似度：
+
+| | prompt 含 ohwx | prompt 不含 ohwx |
+|---|---|---|
+| **LoRA 开** | 0.6151（目标人物） | **0.5666（仍是目标人物）→ 泄漏确认** |
+| **LoRA 关** | 0.0494（随机人物） | -0.0096（随机人物） |
+
+图片：`samples/comparison/comparison_*.png` 与 `samples/comparison/leak_*.png`
+
+**结论**：prompt 不写触发词时相似度仍达 0.5666（接近带触发词的 0.6151），远高于无 LoRA 基线 0.05——**「无触发词也生效」泄漏量化确认**，与社区已知的 Krea 2 LoRA 缺陷一致。成因：训练 caption 全部含触发词，模型把"人物特征"与任意 prompt 绑定而非与触发词绑定。缓解（训练端）：部分 caption 去掉触发词或提高 caption dropout 重训；推理端无法根治。面试可主动提及此验证。
+
+### 5.6 非纯人眼量化评估（Week 1 完成标准②）
+
+- 方法：InsightFace buffalo_l（SCRFD 人脸检测 + ArcFace 嵌入），参考图 = 训练集自拍 00001.jpg，多人脸取最大
+- 数据：[lora-training/benchmarks/2026-09-03-insightface-similarity.md](../../lora-training/benchmarks/2026-09-03-insightface-similarity.md)（9 张逐张相似度 + 统计）
+- 复现：脚本 `Week1/Day4/insightface_eval.py`，环境与步骤见 `Week1/Day4/README.md`
+
+---
+
 ## 6. 最佳参数推荐
 
 ### 6.1 通用推荐
@@ -324,7 +361,7 @@ num_repeats = 1
 
 ```
 Week1/Day3/samples/
-├── comparison/     # 无LoRA vs 有LoRA对比（step900, seed42，git 中保留）
+├── comparison/     # 无LoRA vs 有LoRA对比 + 触发词泄漏 2×2 矩阵（git 中保留）
 ├── front/          # 正面证件照（含 CFG 3/4/7 对比、4个checkpoint）
 ├── side/           # 侧面（4个checkpoint）
 ├── smile/          # 微笑（4个checkpoint）

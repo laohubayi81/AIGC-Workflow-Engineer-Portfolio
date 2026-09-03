@@ -7,8 +7,9 @@
 - Musubi Tuner v0.3.4 训练 Krea 2 人物 LoRA（768px、BF16 基座运行时转 FP8、cached latents + text encoder outputs）
 - 自然语言 caption 打标（Qwen3-VL，不用 WD14 tag）
 - 6 场景 × 4 checkpoint（step300/600/900/1200）横评，给出分场景最佳参数
-- 触发词泄漏验证：step600 发现触发词出现在生成图中（过拟合信号），已记录
-- 待做：非纯人眼评估（InsightFace / CLIP-I / 盲评）、推理端接入 ControlNet + IP-Adapter
+- **InsightFace 量化评估**：权重扫描 0.5–1.2 相似度单调上升（0.41→0.67），无 LoRA 基线仅 0.05
+- **触发词泄漏验证**：2×2 矩阵量化确认——无触发词相似度 0.57 vs 无 LoRA 基线 0.05（社区已知 Krea 2 缺陷）
+- 待做：推理端接入 ControlNet + IP-Adapter（Day 5）
 
 ## 效果展示
 
@@ -19,6 +20,8 @@
 | ![无 LoRA](../Week1/Day3/samples/comparison/comparison_no-lora_step900_s42.png) | ![有 LoRA](../Week1/Day3/samples/comparison/comparison_with-lora_s0.85_step900_s42.png) |
 
 最佳配置：**step1200 checkpoint + strength 0.85**（微笑/艺术感场景 step600 更好）。完整横评见训练报告 §5，更多样张见 `../Week1/Day3/samples/`（front / side / smile / outdoor / fullbody / artistic 六个场景）。
+
+量化评估与缺陷验证（Day 4）：[InsightFace 相似度数据](./benchmarks/2026-09-03-insightface-similarity.md) · [触发词泄漏 2×2 矩阵](../Week1/Day3/training_report.md#55-触发词泄漏系统验证day-4-补测)。
 
 ## 技术栈
 

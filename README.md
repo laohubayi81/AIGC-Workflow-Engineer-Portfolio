@@ -56,6 +56,8 @@
 - [ ] Day 6 · 缓冲 / 补漏
 - [ ] Day 7 · 周复盘
 
+完整 6 周路线图与逐日执行状态 → **[ROADMAP.md](./ROADMAP.md)**（打开项目先看这里）
+
 ## 📮 联系方式
 
 - GitHub：[laohubayi81](https://github.com/laohubayi81)
