@@ -98,13 +98,16 @@ class ComfyClient:
         depth_strength: float = 0.8,
         lora_strength: float = 0.85,
         prefix: str = "Api_portrait",
+        identity_threshold: float = 0.5,
+        fail_if_below: bool = False,
         on_progress: Callable[[dict], None] | None = None,
         retries: int = 3,
     ) -> dict:
-        """生成一张写真。返回 {prompt_id, files, seconds}。"""
+        """生成一张写真。返回 {prompt_id, files, seconds}。fail_if_below=True 时身份门禁不达标整单失败。"""
         spec = self._validate(
             image=image, scene=scene, prompt=prompt, seed=seed,
             depth_strength=depth_strength, lora_strength=lora_strength,
+            identity_threshold=identity_threshold, fail_if_below=fail_if_below,
         )
         graph = self._build_graph(spec, prefix)
         client_id = uuid.uuid4().hex
@@ -219,7 +222,14 @@ class ComfyClient:
             raise ValueError("depth_strength 应在 0–2")
         if not 0 <= lora <= 2:
             raise ValueError("lora_strength 应在 0–2")
-        return {"image": image, "prompt": text, "negative": neg, "seed": seed, "depth": depth, "lora": lora}
+        thr = float(kw.get("identity_threshold", 0.5))
+        if not 0 <= thr <= 1:
+            raise ValueError("identity_threshold 应在 0–1")
+        return {
+            "image": image, "prompt": text, "negative": neg, "seed": seed,
+            "depth": depth, "lora": lora, "identity_threshold": thr,
+            "fail_if_below": bool(kw.get("fail_if_below", False)),
+        }
 
     def _build_graph(self, spec: dict, prefix: str) -> dict:
         graph = deepcopy(json.loads(self.graph_path.read_text(encoding="utf-8")))
@@ -231,6 +241,9 @@ class ComfyClient:
         graph["2"]["inputs"]["strength_model"] = spec["lora"]
         graph["15"]["inputs"]["filename_prefix"] = prefix
         graph["14"]["inputs"]["filename_prefix"] = prefix + "_depth"
+        if "19" in graph:
+            graph["19"]["inputs"]["threshold"] = spec["identity_threshold"]
+            graph["19"]["inputs"]["fail_if_below"] = spec["fail_if_below"]
         return graph
 
     def _validate_i2v(self, **kw) -> dict:

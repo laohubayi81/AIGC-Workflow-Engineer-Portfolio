@@ -1,21 +1,22 @@
 # 自定义节点
 
-第 4 周应该完成项：只做 1 个有业务价值的节点，接到 API / 队列 / Agent 闭环上，不写玩具节点。
+选题：**交付门禁**（计划三选一里的「生成结果质量检测」+ 顺手做 LTX 帧数校验）。不是玩具节点：写真/视频身份不过阈值就不算交付；Length 填错会白跑 70–320 秒。
 
-候选：工作流参数校验 + schema 注入、生成结果质量检测、任务状态记录。尚未选题。
+包：[`comfyui-delivery-gate`](./comfyui-delivery-gate/)
 
-## 核心功能
+| 节点 | 作用 |
+|---|---|
+| `IdentityGate` | 生成图（或视频第一帧）vs 自拍，buffalo_l 余弦 |
+| `LtxLengthGuard` | Length 必须 `8n+1` |
 
-待 Day 25 确定选题后填写。
+安装、参数、冒烟数字 → [comfyui-delivery-gate/README.md](./comfyui-delivery-gate/README.md)
 
-## 效果展示
-
-未开始。
+已接到写真 API：`portrait_api.json` 节点 `19` IdentityGate（参考图=控制自拍）。`generate(..., fail_if_below=True)` 时不够像整单失败。
 
 ## 技术栈
 
-ComfyUI 自定义节点：`INPUT_TYPES` / `RETURN_TYPES` / `NODE_CLASS_MAPPINGS`。
+`INPUT_TYPES` / `RETURN_TYPES` / `NODE_CLASS_MAPPINGS`。ONNX Runtime + 本机已有 `buffalo_l`。无额外 pip。
 
 ## 安装 / 使用
 
-待节点代码与 `requirements.txt` 提交后补充。
+拷到 ComfyUI `custom_nodes/comfyui-delivery-gate` 后重启。画布搜 `Identity Gate`。

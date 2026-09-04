@@ -1,0 +1,6 @@
+{
+  "comment": "One worker = same as serial queue. Add a second base_url only if that ComfyUI is a different GPU. Two processes on one 16GB card will OOM.",
+  "workers": [
+    {"name": "local-a", "base_url": "http://127.0.0.1:8188"}
+  ]
+}

@@ -6,7 +6,7 @@
 
 > 能演示 · 能复现 · 能测量 · 能解释 —— 仓库里所有数字均为实测，没有数据就不写
 
-![Progress](https://img.shields.io/badge/进度-Week%203%20视频流水线-2ea44f?style=flat-square)
+![Progress](https://img.shields.io/badge/进度-Week%204%20工程化-2ea44f?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Krea%202%20%2F%20LTX%202.3-blue?style=flat-square)
 ![LoRA](https://img.shields.io/badge/LoRA-Musubi%20Tuner%20v0.3.4-orange?style=flat-square)
 ![GPU](https://img.shields.io/badge/本地-RTX%205080%20Laptop%2016GB-8a2be2?style=flat-square)
@@ -81,14 +81,29 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 
 生态表：[ecosystem.md](workflows/video-modules/ecosystem.md)。口型（Day 20）跳过。
 
+## ✨ Week 4：交付门禁 · 队列监控 · 分发器
+
+自定义节点不是玩具：生成图 vs 自拍做 buffalo_l 余弦，低于阈值可不入库；LTX Length 必须 `8n+1`，填错会白跑 70–320 秒。
+
+| 项 | 说明 |
+|---|---|
+| 节点 | [`comfyui-delivery-gate`](custom-nodes/comfyui-delivery-gate/)：`IdentityGate` + `LtxLengthGuard` |
+| 脚本冒烟 | 自拍 vs 咖啡馆写真 **0.54**（过 0.50）；vs 无 LoRA **−0.00** |
+| API | `portrait_api.json` 节点 19；成片 `Api_portrait_00003_.png` |
+| 监控 | `queue_report.py`：成功率 / P50 / P90 / 失败原因。回放 50 张写真 **P50=57.3s** |
+| 分发器 | 每 worker 1 槽。dry-run 2×6：**max_inflight=2**。16GB 不宜双 Comfy |
+| Docker | [步骤](deploy/README.md) 已写。本机拉 CUDA 层 **KB/s**，**未 `up` 成功** |
+| 成本 | [对照表](workflows/benchmarks/2026-09-04-cost-compare.md)：日常本地；再训 AutoDL；RH 未实跑 |
+
 ## 🧭 模块导航
 
 | 模块 | 说明 | 状态 |
 |---|---|---|
 | 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参、推理端集成 | ✅ Week 1 |
 | 🖼️ [workflows](./workflows/) | 数字人写真 + LTX 视频分段流水线 + API | ✅ Week 2–3 |
-| 🧩 [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | ⬜ Week 4 |
-| 🤖 [agent-project](./agent-project/) | Comfy 客户端已落地；Agent 状态机 ⬜ Week 5 | 🚧 API 先行 |
+| 🧩 [custom-nodes](./custom-nodes/) | 交付门禁 IdentityGate + LTX Length Guard | ✅ Week 4 |
+| 📦 [deploy](./deploy/) | Docker 方案（本机未跑通容器） | 📄 步骤已写 |
+| 🤖 [agent-project](./agent-project/) | `generate` / 队列 / 分发器 / 监控；Agent 状态机 ⬜ Week 5 | 🚧 API 先行 |
 
 ## 🛠️ 技术栈
 
@@ -97,7 +112,7 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 | 工作流 | ComfyUI（Krea 2 RAW FP8 · LTX 2.3 量化版） |
 | 训练 | Musubi Tuner v0.3.4 · 恒源云 RTX 4090D 24GB（BF16 权重，运行时 FP8） |
 | 推理 | Krea 2 RAW FP8 · Depth CN-LoRA · krea2edit Identity Edit · Qwen3-VL |
-| 调度 | ComfyUI `/prompt` + `/ws` · CSV 串行队列 |
+| 调度 | ComfyUI `/prompt` + `/ws` · CSV 队列 · 分发器（每卡 1 槽） |
 | 本地环境 | RTX 5080 Laptop 16GB + 32GB RAM（[环境基线](./lora-training/benchmarks/2026-09-01-environment.md)） |
 
 ## 📈 Week 1 进度
@@ -129,6 +144,15 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - [x] Day 19 · 视频 API 5/5
 - [x] Day 20 · 口型跳过
 - [ ] Day 21 · 推 GitHub + 开始投递
+
+## 📈 Week 4 进度
+
+- [x] Day 22 · Docker 方案+步骤；本机 `up` 跳过（镜像层 KB/s）
+- [x] Day 23 · 分发器 dry-run 6/6，max_inflight=2
+- [x] Day 24 · 成本对照（本地 / AutoDL / RH 官网价）
+- [x] Day 25–26 · IdentityGate + Length Guard
+- [x] Day 27 · 队列监控 P50/P90 / fail_reasons
+- [ ] Day 28 · 周复盘
 
 完整 6 周路线图与逐日执行状态 → **[ROADMAP.md](./ROADMAP.md)**（打开项目先看这里）
 

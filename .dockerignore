@@ -1,0 +1,11 @@
+.git
+.grok
+.tmp_dl
+.workbuddy
+**/__pycache__
+**/*.pyc
+workflows/queue/runs
+Week1/Day3/samples
+lora-training/samples
+workflows/samples
+*.mp4

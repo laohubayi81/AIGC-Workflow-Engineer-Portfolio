@@ -1,0 +1,20 @@
+# Paths inside the container. Host folders are bind-mounted over these.
+docker:
+  base_path: /models
+  is_default: true
+  checkpoints: checkpoints
+  clip: clip
+  clip_vision: clip_vision
+  configs: configs
+  controlnet: controlnet
+  diffusion_models: diffusion_models
+  embeddings: embeddings
+  loras: loras
+  text_encoders: text_encoders
+  unet: unet
+  upscale_models: upscale_models
+  vae: vae
+  vae_approx: vae_approx
+  insightface: insightface
+  facerestore_models: facerestore_models
+  latent_upscale_models: latent_upscale_models

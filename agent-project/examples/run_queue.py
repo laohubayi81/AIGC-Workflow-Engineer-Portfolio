@@ -16,5 +16,13 @@ if __name__ == "__main__":
     ap.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     ap.add_argument("--limit", type=int, default=None, help="只跑前 N 条（冒烟用）")
     ap.add_argument("--state", type=Path, default=None, help="已有 state.jsonl 则断点续跑")
+    ap.add_argument("--fail-if-below", action="store_true", help="IdentityGate 低于阈值则本条失败")
+    ap.add_argument("--identity-threshold", type=float, default=0.5)
     args = ap.parse_args()
-    run_queue(args.csv, state_path=args.state, limit=args.limit)
+    run_queue(
+        args.csv,
+        state_path=args.state,
+        limit=args.limit,
+        fail_if_below=args.fail_if_below,
+        identity_threshold=args.identity_threshold,
+    )

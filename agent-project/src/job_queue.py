@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import json
 import time
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -56,6 +57,103 @@ def append_state(state_path: Path, rec: dict) -> None:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
+def classify_error(err: str | None) -> str:
+    t = (err or "").lower()
+    if "identitygate" in t or "identity gate" in t or "cosine=" in t:
+        return "identity_gate"
+    if "未在" in (err or "") or "comfyui" in t and ("监听" in (err or "") or "refused" in t):
+        return "comfy_down"
+    if "timed out" in t or "timeout" in t:
+        return "timeout"
+    if "execution error" in t or "runtimerror" in t or "runtimeerror" in t:
+        return "execution"
+    if "场景库" in (err or "") or "必须提供" in (err or "") or "valueerror" in t:
+        return "validation"
+    if not err:
+        return "unknown"
+    return "other"
+
+
+def _percentile(xs: list[float], p: float) -> float | None:
+    if not xs:
+        return None
+    ys = sorted(xs)
+    if len(ys) == 1:
+        return round(ys[0], 2)
+    k = (len(ys) - 1) * p / 100.0
+    lo = int(k)
+    hi = min(lo + 1, len(ys) - 1)
+    frac = k - lo
+    return round(ys[lo] * (1.0 - frac) + ys[hi] * frac, 2)
+
+
+def summarize_state(state_path: Path) -> dict:
+    """Latest record per id. Success rate, P50/P90, failure reason histogram."""
+    latest: dict[str, dict] = {}
+    if state_path.exists():
+        for line in state_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            rec = json.loads(line)
+            jid = rec.get("id")
+            if jid:
+                latest[str(jid)] = rec
+    recs = list(latest.values())
+    ok = [r for r in recs if r.get("ok")]
+    fail = [r for r in recs if r.get("ok") is False]
+    secs = [float(r["seconds"]) for r in ok if isinstance(r.get("seconds"), (int, float))]
+    reasons = Counter(classify_error(r.get("error")) for r in fail)
+    n_ok, n_fail = len(ok), len(fail)
+    attempted = n_ok + n_fail
+    return {
+        "jobs_in_state": len(recs),
+        "ok": n_ok,
+        "fail": n_fail,
+        "success_rate": round((n_ok / attempted), 4) if attempted else 1.0,
+        "latency_s": {
+            "n": len(secs),
+            "mean": round(sum(secs) / len(secs), 2) if secs else None,
+            "p50": _percentile(secs, 50),
+            "p90": _percentile(secs, 90),
+            "min": round(min(secs), 2) if secs else None,
+            "max": round(max(secs), 2) if secs else None,
+        },
+        "fail_reasons": dict(reasons),
+    }
+
+
+def write_report(summary: dict, path: Path) -> Path:
+    lat = summary.get("latency_s") or {}
+    reasons = summary.get("fail_reasons") or {}
+    reason_lines = (
+        "\n".join(f"| `{k}` | {v} |" for k, v in sorted(reasons.items()))
+        or "| (none) | 0 |"
+    )
+    md = f"""# Queue monitor
+
+- state: `{summary.get("state", "")}`
+- 本轮墙钟: {summary.get("seconds")} s · skip={summary.get("skip")}
+- 状态文件（每 id 最后一条）: jobs={summary.get("jobs_in_state")} ok={summary.get("ok")} fail={summary.get("fail")}
+- **成功率**: {summary.get("success_rate")}
+
+## 耗时（成功任务 seconds）
+
+| n | mean | P50 | P90 | min | max |
+|---|---|---|---|---|---|
+| {lat.get("n")} | {lat.get("mean")} | {lat.get("p50")} | {lat.get("p90")} | {lat.get("min")} | {lat.get("max")} |
+
+## 失败原因
+
+| reason | n |
+|---|---|
+{reason_lines}
+
+`identity_gate` = IdentityGate 拒收；`comfy_down` = 服务没开；`execution` = 图执行红字。
+"""
+    path.write_text(md, encoding="utf-8")
+    return path
+
+
 def run_queue(
     csv_path: Path,
     *,
@@ -64,6 +162,8 @@ def run_queue(
     extra_retries: int = 1,
     client: ComfyClient | None = None,
     kind: str = "portrait",
+    fail_if_below: bool = False,
+    identity_threshold: float = 0.5,
 ) -> dict:
     csv_path = Path(csv_path)
     run_dir = csv_path.parent / "runs" / datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -112,6 +212,8 @@ def run_queue(
                         prompt=job.get("prompt"),
                         seed=job["seed"],
                         prefix=job["prefix"],
+                        fail_if_below=fail_if_below,
+                        identity_threshold=identity_threshold,
                     )
                 rec = {"ok": True, "id": jid, **job, **r}
                 append_state(state_path, rec)
@@ -124,20 +226,28 @@ def run_queue(
                 last = str(e)
                 log(f"FAIL {jid} {e}")
         if last is not None:
-            append_state(state_path, {"ok": False, "id": jid, **job, "error": last})
+            rec = {"ok": False, "id": jid, **job, "error": last, "fail_reason": classify_error(last)}
+            append_state(state_path, rec)
             fail_n += 1
+            log(f"REASON {jid} {rec['fail_reason']}")
 
     elapsed = time.time() - t0
+    stats = summarize_state(state_path)
     summary = {
         "csv": str(csv_path),
         "state": str(state_path),
+        "report": str(run_dir / "report.md"),
         "total": len(jobs),
         "ok": ok_n,
         "fail": fail_n,
         "skip": skip_n,
         "seconds": round(elapsed, 1),
-        "success_rate": (ok_n / (ok_n + fail_n)) if (ok_n + fail_n) else 1.0,
+        **stats,
     }
     (run_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-    log(f"DONE {summary}")
+    write_report(summary, run_dir / "report.md")
+    log(
+        f"DONE ok={summary['ok']} fail={summary['fail']} rate={summary['success_rate']} "
+        f"p50={summary['latency_s']['p50']} p90={summary['latency_s']['p90']} reasons={summary['fail_reasons']}"
+    )
     return summary

@@ -43,3 +43,20 @@ c.generate(image="00027.jpg", scene="library")  # 用已保存的名字
 python agent-project\examples\run_queue.py --limit 5
 python agent-project\examples\run_queue.py
 ```
+
+身份门禁拒收（可选）：
+
+```powershell
+python agent-project\examples\run_queue.py --limit 5 --fail-if-below
+```
+
+## 监控（Day 27）
+
+每次队列结束会写 `runs/<时间>/summary.json` 和 `report.md`：成功率、耗时 mean/P50/P90、失败原因（`identity_gate` / `comfy_down` / `execution` / …）。
+
+只出报告、不跑 GPU：
+
+```powershell
+python agent-project\examples\queue_report.py --state workflows\queue\runs\<dir>\state.jsonl
+```
+

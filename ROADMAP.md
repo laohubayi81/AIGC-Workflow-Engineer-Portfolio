@@ -6,7 +6,7 @@
 
 ## 🎯 当前位置（最后更新：2026-09-03 夜）
 
-- **位置**：**Week 3 · Day 21 周复盘 + 投递**（视频四专项+API 已齐。Wan 1.3B 未装。Day 20 口型跳过。下一步：推 GitHub，BOSS 搜 ComfyUI / AIGC 工程师）
+- **位置**：**整理 README 后推 GitHub**（Week 1–4 数字已写入主 README。Docker 未 up。Wan 未装）
 - **Day 5 可行性探测（09-03）+ 复核修正（09-03，用户纠错 → 检索证实）**：
   - ✅ **ControlNet（复核修正，恢复集成）**：Krea 2 的 CN 以 **ControlNet-LoRA** 形态实现——文件放 `models/loras/`、经自定义节点加载（原探测只查 `models/controlnet/` 与传统 CN 形态，搜索框架错误导致漏判）：
     - **Depth**：HF `Patil/Krea-2-depth-controlnet`（862MB rank64 + expanded input projection；Raw / Turbo 通吃；深度一致性 Pearson 0.98 无 prompt / 0.99 有 prompt）
@@ -107,12 +107,12 @@
 
 **核心目标**：Docker 部署方案 + 多实例分发器 + 云端成本对比 + 1 个有业务价值的自定义节点 + 监控统计。
 
-- [ ] Day 22 · Docker 部署 ComfyUI（nvidia/cuda 基础镜像 + GPU 直通 + 模型 volume 挂载）→ Dockerfile + compose + 文档
-- [ ] Day 23 · 多实例原理 + 任务分发器脚本（云端双实例验证，或本地单实例逻辑验证）
-- [ ] Day 24 · 云端 GPU 实践 + 成本对比报告（本地 5080 / 云 4090 / RunningHub 三方对比 + 选型建议）
-- [ ] Day 25 · 自定义节点开发（三选一：参数校验注入 / 生成质量检测 / 任务状态记录；含 NODE_CLASS_MAPPINGS 注册）
-- [ ] Day 26 · 节点完善 + `custom-nodes/` 模块 README（安装 / 参数 / 依赖 / 效果截图）
-- [ ] Day 27 · 监控统计模块（成功率、P50/P90、失败原因分布）集成进批量调度脚本
+- [x] Day 22 · Docker：**方案+步骤已写** [`deploy/README.md`](deploy/README.md)；**本机 `up` 跳过**（Hub IPv6 失败，随后 CUDA 层 KB/s）。未跑通容器，面试不说已部署
+- [x] Day 23 · 分发器 [`dispatcher.py`](agent-project/src/dispatcher.py)：N worker、每卡 1 槽。用户 dry-run：**6/6**，`max_inflight=2`。云双实例未做
+- [x] Day 24 · 成本对比 [2026-09-04-cost-compare.md](workflows/benchmarks/2026-09-04-cost-compare.md)。时长=本机实测；RH 用官网单价折算、**未在 RH 上跑**
+- [x] Day 25 · 自定义节点：交付门禁 [`comfyui-delivery-gate`](custom-nodes/comfyui-delivery-gate/)（`IdentityGate` 质量检测 + `LtxLengthGuard` 参数校验；`NODE_CLASS_MAPPINGS`）
+- [x] Day 26 · 节点 README（安装 / 参数 / 依赖 / 脚本冒烟 0.54 vs −0.00）。Comfy 画布截图等 Queue 后补
+- [x] Day 27 · 队列监控：`summarize_state` / `report.md`（成功率、P50/P90、fail_reasons）。对 Day 12 与 Day 19 的 state 回放，数字一致
 - [ ] Day 28 · 周复盘
 
 **完成标准**：① Docker 部署 ② 分发器 + 吞吐对比 ③ 成本对比报告 ④ 业务价值节点 ⑤ 监控模块 ⑥ 持续投递面试
@@ -163,6 +163,10 @@
 | 09-04 | 视频 15+ 节点不做成一张图 | LTX+ReActor+4x+RIFE 同 Queue 会 OOM。按 A/B/C 三段讲 |
 | 09-04 | API/冒烟默认 Length 25≈1s；用户另跑 121≈5s | 1s 是冒烟；5s 约 320s，批量默认仍 1s |
 | 09-04 | Day 20 口型跳过 | 计划可选、卡住不超过半天 |
+| 09-04 | Docker 镜像是 CUDA 12.8 / 写真+门禁，不是 Desktop 的 3.13+CUDA13 原样打包 | 权重 volume 挂载；LTX/ReActor/RIFE 默认不进镜像。引擎未启动，未实测 up |
+| 09-04 | `docker compose up --build` 拉 `nvidia/cuda` 失败 | Docker Hub IPv6 超时、未配 HTTPS 代理。改 DaoCloud `12.4.1` 镜像 + Engine `registry-mirrors` / `ipv6: false` |
+| 09-04 | Day 22 **跳过容器 up** | CUDA 层约 670MB 只有 KB/s。步骤留在 deploy/README。生产仍用 Comfy Desktop |
+| 09-04 | Day 23 未做云端双实例 | Docker 未 up；16GB 不宜双 Comfy。用 dry-run 验证派发上限 |
 
 ## 🗒 面试反哺记录
 

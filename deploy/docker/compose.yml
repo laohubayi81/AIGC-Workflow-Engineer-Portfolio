@@ -1,0 +1,29 @@
+# GPU ComfyUI. Start Docker Desktop first, then from repo root:
+#   docker compose -f deploy/docker/compose.yml up --build
+name: aigc-comfyui
+
+services:
+  comfyui:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        CUDA_IMAGE: ${CUDA_IMAGE:-docker.m.daocloud.io/nvidia/cuda:12.4.1-base-ubuntu22.04}
+    image: aigc-comfyui:week4
+    gpus: all
+    ports:
+      - "8188:8188"
+    volumes:
+      - type: bind
+        source: ${COMFY_MODELS}
+        target: /models
+      - type: bind
+        source: ${COMFY_INPUT}
+        target: /input
+      - type: bind
+        source: ${COMFY_OUTPUT}
+        target: /output
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    restart: unless-stopped

@@ -24,6 +24,10 @@ python agent-project/examples/generate_one.py
 
 Day 19 视频：`python agent-project/examples/generate_i2v.py`；分镜队列 `python agent-project/examples/run_video_queue.py --limit 1`。
 
+监控：`python agent-project/examples/queue_report.py --state <state.jsonl>`。
+
+分发器（不占 GPU）：`python agent-project/examples/run_dispatch.py --limit 6`。真打 Comfy 加 `--live --limit 1`。
+
 ## 技术栈
 
 Python 标准库（HTTP + 自研最小 WebSocket，无 pip 依赖）+ ComfyUI `/prompt` `/history` `/ws`。

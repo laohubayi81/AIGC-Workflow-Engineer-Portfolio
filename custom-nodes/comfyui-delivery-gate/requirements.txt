@@ -1,0 +1,2 @@
+# onnxruntime / opencv / numpy: already in ComfyUI Desktop venv
+# insightface Python package is NOT required; uses local buffalo_l ONNX.
