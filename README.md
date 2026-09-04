@@ -6,6 +6,8 @@
 
 > 能演示 · 能复现 · 能测量 · 能解释 —— 仓库里所有数字均为实测，没有数据就不写
 
+> **一条主线**：训练一个"自己"的人物 LoRA（模型层）→ 封装成 10+ 节点的可量产写真工作流（工作流层）→ API 化 + 批量队列 + 监控（服务层）→ 交付门禁自定义节点（质量层）。每一周都是这条栈上的一层——简历项目段落见 [docs/resume-projects.md](docs/resume-projects.md)。
+
 ![Progress](https://img.shields.io/badge/进度-Week%204%20工程化-2ea44f?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Krea%202%20%2F%20LTX%202.3-blue?style=flat-square)
 ![LoRA](https://img.shields.io/badge/LoRA-Musubi%20Tuner%20v0.3.4-orange?style=flat-square)
@@ -143,7 +145,7 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - [x] Day 18 · 首尾帧，73.5 s
 - [x] Day 19 · 视频 API 5/5
 - [x] Day 20 · 口型跳过
-- [ ] Day 21 · 推 GitHub + 开始投递
+- [x] Day 21 · GitHub 已推；投递进行中
 
 ## 📈 Week 4 进度
 

@@ -6,7 +6,7 @@
 
 ## 🎯 当前位置（最后更新：2026-09-03 夜）
 
-- **位置**：**整理 README 后推 GitHub**（Week 1–4 数字已写入主 README。Docker 未 up。Wan 未装）
+- **位置**：**Day 27 · Week 4 收尾中**（Day 28 周复盘 09-05 做；BOSS 投递 09-08 启动。Docker 未 up。Wan 未装 → VACE-1.3B 已立项 09-07）
 - **Day 5 可行性探测（09-03）+ 复核修正（09-03，用户纠错 → 检索证实）**：
   - ✅ **ControlNet（复核修正，恢复集成）**：Krea 2 的 CN 以 **ControlNet-LoRA** 形态实现——文件放 `models/loras/`、经自定义节点加载（原探测只查 `models/controlnet/` 与传统 CN 形态，搜索框架错误导致漏判）：
     - **Depth**：HF `Patil/Krea-2-depth-controlnet`（862MB rank64 + expanded input projection；Raw / Turbo 通吃；深度一致性 Pearson 0.98 无 prompt / 0.99 有 prompt）
@@ -27,6 +27,31 @@
   - ✅ 路线 A v2：identity_edit LoRA @1.0 + myface @0.85，prompt 为编辑指令。ref_boost 1.0/4.0/8.0 都完成白底黑 T；身份 vs 00001 为 0.68→0.69→0.73。第一轮未挂专用 LoRA 的蜡像图作废。
   - ✅ 组件边界表已写入 Day 5 README。stretch（A+B+myface 三重）未跑。OpenPose 未测。推理全程 RAW FP8，未跑 Turbo / NVFP4。
   - **下一步**：拖 `workflows/digital_portrait.json` 进 ComfyUI，用 `00027.jpg` Queue 一张公园成片；通过后可换棚拍 / 夜景 prompt
+
+---
+
+## 🗓 执行表（09-05 → 09-14 · Week 5 主线 + P0 补强 + Demo 插入）
+
+> 对应 JD 匹配分析后的缺口清单（详见 docs/ACTION_ITEMS.md）。BOSS 投递自 09-08 启动，目标首周 10-15。
+
+| 日期 | 对应日 | 内容 |
+|---|---|---|
+| 09-05 周五 | Day 28 | ① 周复盘（Week 4 收进主 README）② SDXL 文生图补测 4 张（耗时/显存入 benchmark）③ 晚：reactor_video 换脸成片 |
+| 09-06 周六 | 插入 | ① Docker compose up 实测（记录显存/启动耗时）② 写真链超分 768→3072（benchmark）③ Civitai 发布 digital_portrait.json |
+| 09-07 周日 | 插入 | ① VHS 节点 + VACE-1.3B 三件套安装 ② 官方 V2V 模板跑通（00027.jpg + Depth 预处理）③ 原理清单模块一/二 |
+| 09-08 周一 | Day 29 | BOSS 投递三连（计数 3/10）+ Agent 状态机设计文档 + 流程图 |
+| 09-09 周二 | Day 30 | Agent 基础框架 + 最小闭环 demo（本地 LTX 后端） |
+| 09-10 周三 | Day 31 | 工作流注册表 + JSON Schema 校验（portrait / i2v / VACE 三条） |
+| 09-11 周四 | Day 32 | 批量任务 + 结果检查；Kohya_ss 体验 + **SDXL LoRA 云端对照下单**（AutoDL，与 Krea 2 版对照） |
+| 09-12 周五 | Day 33 | WebSocket 进度透传 + 成本统计 + 错误处理；投递累计 10+ |
+| 09-13 周六 | Day 34 | **FastAPI 任务服务层（硬保护，上午雷打不动）** + Agent README + demo GIF |
+| 09-14 周日 | Day 35 | 周复盘 + Showreel 剪辑 + Agent 上简历 + 原理清单收尾 |
+
+注：每晚原理清单 1 模块（docs/principles-study-list.md）；SDXL LoRA 成品回来后做对照评估并发布。
+
+**交付物覆盖说明**：本表 = 三交付物 + Agent 项目（简历第三作品，独立于三交付物）+ 求职动作，三线并行。
+**09-15+ backlog（Week 6 缓冲期消化）**：Flux 对照、训练配方文档、失败实验对照、LoRA 上架、100+ 队列实测、电商/口播场景、各 demo 技术拆解文档、AI 协作流程文档。
+**完整总纲（含 Week 6 与验收标准）→ [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md)**
 
 ---
 
@@ -79,7 +104,7 @@
 - [x] Day 18 · 时序：LTX 首尾帧 `LTX2.3_i2v_flf.json`（32 节点）；成片 `LTX_flf_00001`，**73.5 s**，24fps / 1.4s。IC-LoRA / IP-Adapter 无本机权重已留证。15+ 节点按 A 生成 / B 换脸 / C 后处理分段（16GB 不能一张图硬拼）
 - [x] Day 19 · 视频 API：`i2v_api.json` + `generate_i2v()` + CSV 5 条 **5/5**，墙钟 **155 s**（热路径约 38s；首条 2.6s 记为缓存）
 - [x] Day 20 · 口型：**跳过**（可选；计划卡住不超过半天。本周不接）
-- [ ] Day 21 · 周复盘入库 + **开始投递**（BOSS 直聘，关键词：ComfyUI / AIGC 工程师 / AI 视频工程师）
+- [x] Day 21 · Week 3/4 文档入库并已 push；**投递进行中**（BOSS 直聘）
 
 **完成标准**：
 
@@ -87,8 +112,8 @@
 - [x] ② 15+ 节点：首尾帧图 32 节点；全链路按 A 生成 → B 换脸 → C 后处理分段（16GB 不能一张图硬拼）
 - [x] ③ 生态对比表（Wan / H3 无本机数字）
 - [x] ④ 视频 API + CSV 5/5
-- [ ] ⑤ 投递启动（今天开始）
-- [ ] ⑥ GitHub 推 Week 3 JSON / 文档 / benchmark（你本地 commit + push）
+- [ ] ⑤ 投递启动（BOSS，首日 10–15 个）
+- [x] ⑥ GitHub 已推（用户确认）
 
 **Day 21 复盘数字（只写测过的）**：
 
