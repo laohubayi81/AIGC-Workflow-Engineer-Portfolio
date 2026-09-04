@@ -1,0 +1,17 @@
+{
+  "blink": {
+    "prompt": "the same person looking at the camera, almost still, only a slow blink, mouth stays closed, lips do not move, expression unchanged, cinematic lighting, photorealistic"
+  },
+  "head_sway": {
+    "prompt": "the same person looking at the camera, tiny natural head sway, mouth stays closed, lips do not move, expression unchanged, cinematic lighting, photorealistic"
+  },
+  "look_left": {
+    "prompt": "the same person slowly turns the head a little to the left, eyes follow, mouth stays closed, lips do not move, cinematic lighting, photorealistic"
+  },
+  "nod": {
+    "prompt": "the same person gives a very small nod, mouth stays closed, lips do not move, expression calm, cinematic lighting, photorealistic"
+  },
+  "still": {
+    "prompt": "the same person looking at the camera, almost frozen, only subtle breathing motion in the shoulders, mouth stays closed, cinematic lighting, photorealistic"
+  }
+}

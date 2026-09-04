@@ -24,6 +24,7 @@ def load_jobs(csv_path: Path) -> list[dict]:
         prompt = str(r.get("prompt") or "").strip() or None
         if not scene and not prompt:
             raise ValueError(f"CSV 第 {r.get('id')} 行要有 scene（场景库名字）或 prompt（自定义提示词）")
+        length_raw = str(r.get("length") or "").strip()
         jobs.append({
             "id": r["id"].strip(),
             "image": r["image"].strip(),
@@ -31,6 +32,7 @@ def load_jobs(csv_path: Path) -> list[dict]:
             "prompt": prompt,
             "seed": int(r["seed"]),
             "prefix": r["prefix"].strip(),
+            "length": int(length_raw) if length_raw else 25,
         })
     return jobs
 
@@ -61,6 +63,7 @@ def run_queue(
     limit: int | None = None,
     extra_retries: int = 1,
     client: ComfyClient | None = None,
+    kind: str = "portrait",
 ) -> dict:
     csv_path = Path(csv_path)
     run_dir = csv_path.parent / "runs" / datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -93,13 +96,23 @@ def run_queue(
         for a in range(attempts):
             log(f"RUN {jid} scene={job['scene']} seed={job['seed']} try={a+1}/{attempts}")
             try:
-                r = client.generate(
-                    image=job["image"],
-                    scene=job["scene"],
-                    prompt=job.get("prompt"),
-                    seed=job["seed"],
-                    prefix=job["prefix"],
-                )
+                if kind == "i2v":
+                    r = client.generate_i2v(
+                        image=job["image"],
+                        scene=job["scene"],
+                        prompt=job.get("prompt"),
+                        seed=job["seed"],
+                        prefix=job["prefix"],
+                        length=job.get("length") or 25,
+                    )
+                else:
+                    r = client.generate(
+                        image=job["image"],
+                        scene=job["scene"],
+                        prompt=job.get("prompt"),
+                        seed=job["seed"],
+                        prefix=job["prefix"],
+                    )
                 rec = {"ok": True, "id": jid, **job, **r}
                 append_state(state_path, rec)
                 done.add(jid)

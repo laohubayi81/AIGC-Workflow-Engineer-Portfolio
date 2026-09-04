@@ -1,0 +1,152 @@
+{
+  "id": "day17-upscale-rife",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadVideo",
+      "pos": [40, 80],
+      "size": [320, 80],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "VIDEO", "type": "VIDEO", "links": [1], "slot_index": 0}],
+      "properties": {"Node name for S&R": "LoadVideo"},
+      "widgets_values": ["post_in.mp4"]
+    },
+    {
+      "id": 2,
+      "type": "GetVideoComponents",
+      "pos": [400, 80],
+      "size": [240, 130],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [{"name": "video", "type": "VIDEO", "link": 1}],
+      "outputs": [
+        {"name": "images", "type": "IMAGE", "links": [2], "slot_index": 0},
+        {"name": "audio", "type": "AUDIO", "links": [6], "slot_index": 1},
+        {"name": "fps", "type": "FLOAT", "links": null},
+        {"name": "bit_depth", "type": "COMBO", "links": null},
+        {"name": "color_space", "type": "COMBO", "links": null}
+      ],
+      "properties": {"Node name for S&R": "GetVideoComponents"},
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "UpscaleModelLoader",
+      "pos": [400, 280],
+      "size": [320, 60],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "UPSCALE_MODEL", "type": "UPSCALE_MODEL", "links": [3], "slot_index": 0}],
+      "properties": {"Node name for S&R": "UpscaleModelLoader"},
+      "widgets_values": ["4x-UltraSharp.pth"]
+    },
+    {
+      "id": 4,
+      "type": "ImageUpscaleWithModel",
+      "pos": [760, 80],
+      "size": [240, 80],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "upscale_model", "type": "UPSCALE_MODEL", "link": 3},
+        {"name": "image", "type": "IMAGE", "link": 2}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [4], "slot_index": 0}],
+      "properties": {"Node name for S&R": "ImageUpscaleWithModel"},
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "RIFE VFI",
+      "pos": [1060, 80],
+      "size": [320, 280],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "frames", "type": "IMAGE", "link": 4},
+        {"name": "optional_interpolation_states", "shape": 7, "type": "INTERPOLATION_STATES", "link": null},
+        {"name": "ckpt_name", "type": "COMBO", "widget": {"name": "ckpt_name"}, "link": null},
+        {"name": "clear_cache_after_n_frames", "type": "INT", "widget": {"name": "clear_cache_after_n_frames"}, "link": null},
+        {"name": "multiplier", "type": "INT", "widget": {"name": "multiplier"}, "link": null},
+        {"name": "fast_mode", "type": "BOOLEAN", "widget": {"name": "fast_mode"}, "link": null},
+        {"name": "ensemble", "type": "BOOLEAN", "widget": {"name": "ensemble"}, "link": null},
+        {"name": "scale_factor", "type": "COMBO", "widget": {"name": "scale_factor"}, "link": null},
+        {"name": "dtype", "type": "COMBO", "widget": {"name": "dtype"}, "link": null},
+        {"name": "torch_compile", "type": "BOOLEAN", "widget": {"name": "torch_compile"}, "link": null},
+        {"name": "batch_size", "type": "INT", "widget": {"name": "batch_size"}, "link": null}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [5], "slot_index": 0}],
+      "properties": {"Node name for S&R": "RIFE VFI"},
+      "widgets_values": ["rife49.pth", 5, 2, true, false, 1.0, "float16", false, 1]
+    },
+    {
+      "id": 6,
+      "type": "CreateVideo",
+      "pos": [1440, 80],
+      "size": [270, 130],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 5},
+        {"name": "audio", "shape": 7, "type": "AUDIO", "link": 6},
+        {"name": "fps", "type": "FLOAT", "widget": {"name": "fps"}, "link": null},
+        {"name": "bit_depth", "shape": 7, "type": "COMBO", "widget": {"name": "bit_depth"}, "link": null},
+        {"name": "color_space", "shape": 7, "type": "COMBO", "widget": {"name": "color_space"}, "link": null}
+      ],
+      "outputs": [{"name": "VIDEO", "type": "VIDEO", "links": [7], "slot_index": 0}],
+      "properties": {"Node name for S&R": "CreateVideo"},
+      "widgets_values": [48, "auto", "sRGB"]
+    },
+    {
+      "id": 7,
+      "type": "SaveVideo",
+      "pos": [1760, 80],
+      "size": [320, 150],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [{"name": "video", "type": "VIDEO", "link": 7}],
+      "outputs": [{"name": "video", "type": "VIDEO", "links": null}],
+      "properties": {"Node name for S&R": "SaveVideo"},
+      "widgets_values": ["video/Day17_upscale_rife", "mp4", "auto"]
+    },
+    {
+      "id": 8,
+      "type": "Note",
+      "pos": [40, 400],
+      "size": [700, 220],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": ["Day 17 超分 + RIFE\n\n输入 post_in.mp4 = ReActor 换脸短片\n4x-UltraSharp 超分 → RIFE 2x（24fps→48fps）\n\n1. 重启 ComfyUI 后再打开本图\n2. Queue → output/video/Day17_upscale_rife_*.mp4\n3. 爆显存：右键 Upscale Image 选 Bypass，只跑 RIFE\n4. 不要和 LTX 同一张图画布 Queue"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "VIDEO"],
+    [2, 2, 0, 4, 1, "IMAGE"],
+    [3, 3, 0, 4, 0, "UPSCALE_MODEL"],
+    [4, 4, 0, 5, 0, "IMAGE"],
+    [5, 5, 0, 6, 0, "IMAGE"],
+    [6, 2, 1, 6, 1, "AUDIO"],
+    [7, 6, 0, 7, 0, "VIDEO"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"ds": {"scale": 0.85, "offset": [40, 20]}},
+  "version": 0.4
+}

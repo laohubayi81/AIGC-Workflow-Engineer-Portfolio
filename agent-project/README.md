@@ -22,6 +22,8 @@ python agent-project/examples/generate_one.py
 
 批量：`python agent-project/examples/run_queue.py`（CSV 50 条，可 `--limit` / `--state` 续跑）。Day 12 实跑 50/50 成功。
 
+Day 19 视频：`python agent-project/examples/generate_i2v.py`；分镜队列 `python agent-project/examples/run_video_queue.py --limit 1`。
+
 ## 技术栈
 
 Python 标准库（HTTP + 自研最小 WebSocket，无 pip 依赖）+ ComfyUI `/prompt` `/history` `/ws`。

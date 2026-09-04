@@ -1,0 +1,6 @@
+id,image,scene,prompt,seed,prefix,length
+v01,portrait_cafe.png,blink,,42,video/Api_i2v_blink,25
+v02,portrait_cafe.png,head_sway,,43,video/Api_i2v_sway,25
+v03,portrait_cafe.png,look_left,,44,video/Api_i2v_left,25
+v04,portrait_cafe.png,nod,,45,video/Api_i2v_nod,25
+v05,portrait_cafe.png,still,,46,video/Api_i2v_still,25

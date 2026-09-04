@@ -6,7 +6,7 @@
 
 > 能演示 · 能复现 · 能测量 · 能解释 —— 仓库里所有数字均为实测，没有数据就不写
 
-![Progress](https://img.shields.io/badge/进度-Week%202%20写真API%20队列-2ea44f?style=flat-square)
+![Progress](https://img.shields.io/badge/进度-Week%203%20视频流水线-2ea44f?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Krea%202%20%2F%20LTX%202.3-blue?style=flat-square)
 ![LoRA](https://img.shields.io/badge/LoRA-Musubi%20Tuner%20v0.3.4-orange?style=flat-square)
 ![GPU](https://img.shields.io/badge/本地-RTX%205080%20Laptop%2016GB-8a2be2?style=flat-square)
@@ -67,12 +67,26 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - 场景库可自写中文再存英文 prompt：[scenes.json](workflows/queue/scenes.json) · Skill `digital-portrait`
 - 性能 / 队列统计：[Day 9](workflows/benchmarks/2026-09-03-portrait-bench.md) · [Day 12](workflows/benchmarks/2026-09-03-queue-50.md)
 
+## ✨ Week 3：视频流水线（LTX 2.3 · 16GB 分段）
+
+写真静帧 → LTX 图生视频 →（可选）换脸 → 超分 + RIFE。16GB **不能**把生成、换脸、超分打进同一次 Queue。Wan 1.3B 未装；MiniMax H3 不当地本地底模。
+
+| 专项 | 图 / 成片 | 实测 |
+|---|---|---|
+| 生成 | [`LTX2.3_i2v.json`](workflows/video-modules/LTX2.3_i2v.json) | 25f≈1s：冷约 **70s** / 热约 **20s**；121f≈5s：约 **320s** |
+| 换脸 | [`reactor_video.json`](workflows/video-modules/reactor_video.json) | 静帧 + 逐帧视频通；GFPGAN 下残、restore=none |
+| 超分+插帧 | [`day17_upscale_rife.json`](workflows/video-modules/day17_upscale_rife.json) | **58.3 s**（4x-UltraSharp + RIFE 2x） |
+| 时序 | [`LTX2.3_i2v_flf.json`](workflows/video-modules/LTX2.3_i2v_flf.json) 32 节点 | 首尾帧 **73.5 s**；1.4s 切大场景会生硬 |
+| API | [`i2v_api.json`](workflows/api/i2v_api.json) · `generate_i2v()` | 分镜 CSV **5/5**，墙钟 **155 s**（热路径约 38s） |
+
+生态表：[ecosystem.md](workflows/video-modules/ecosystem.md)。口型（Day 20）跳过。
+
 ## 🧭 模块导航
 
 | 模块 | 说明 | 状态 |
 |---|---|---|
 | 🧪 [lora-training](./lora-training/) | Krea 2 LoRA 训练、评估、调参、推理端集成 | ✅ Week 1 |
-| 🖼️ [workflows](./workflows/) | 数字人写真工作流 + API + 队列 | ✅ Week 2 · 视频 ⬜ Week 3 |
+| 🖼️ [workflows](./workflows/) | 数字人写真 + LTX 视频分段流水线 + API | ✅ Week 2–3 |
 | 🧩 [custom-nodes](./custom-nodes/) | 1 个有业务价值的自定义节点 | ⬜ Week 4 |
 | 🤖 [agent-project](./agent-project/) | Comfy 客户端已落地；Agent 状态机 ⬜ Week 5 | 🚧 API 先行 |
 
@@ -105,6 +119,16 @@ Krea 2 无 IP-Adapter。人像拆成两条（各配 myface @0.85，seed 42，RAW
 - [x] Day 12 · CSV 队列 50/50
 - [x] Day 13 · 缓冲（跳过，无必做项）
 - [x] Day 14 · 周复盘入库
+
+## 📈 Week 3 进度
+
+- [x] Day 15 · 生态表 + LTX I2V（Wan 1.3B 未装）
+- [x] Day 16 · ReActor 静帧 + 视频逐帧
+- [x] Day 17 · 4x-UltraSharp + RIFE，58.3 s
+- [x] Day 18 · 首尾帧，73.5 s
+- [x] Day 19 · 视频 API 5/5
+- [x] Day 20 · 口型跳过
+- [ ] Day 21 · 推 GitHub + 开始投递
 
 完整 6 周路线图与逐日执行状态 → **[ROADMAP.md](./ROADMAP.md)**（打开项目先看这里）
 

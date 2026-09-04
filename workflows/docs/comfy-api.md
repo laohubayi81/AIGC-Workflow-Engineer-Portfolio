@@ -34,3 +34,5 @@ python workflows\api\generate_portrait.py
 Day 10 实测：`queued 33907aea-…` → `status=success 57s` → `Api_portrait_depth_00001_.png, Api_portrait_00001_.png`。
 
 Day 11 封装：`agent-project/src/comfy_client.py`（`generate` / `batch_generate` / WS 进度 / 指数退避）。
+
+Day 19 视频：[`i2v_api.json`](../api/i2v_api.json) + `generate_i2v()`。SaveVideo 的成品在 history 的 `videos`/`gifs` 里，不只 `images`。说明：[day19-video-api.md](./day19-video-api.md)。

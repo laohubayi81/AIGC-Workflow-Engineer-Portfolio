@@ -1,0 +1,145 @@
+{
+  "id": "reactor-video-week3-day16",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadVideo",
+      "pos": [50, 80],
+      "size": [320, 80],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "VIDEO", "type": "VIDEO", "links": [1], "slot_index": 0}],
+      "properties": {"Node name for S&R": "LoadVideo"},
+      "widgets_values": ["swap_target.mp4"]
+    },
+    {
+      "id": 2,
+      "type": "GetVideoComponents",
+      "pos": [420, 80],
+      "size": [240, 130],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [{"name": "video", "type": "VIDEO", "link": 1}],
+      "outputs": [
+        {"name": "images", "type": "IMAGE", "links": [2], "slot_index": 0},
+        {"name": "audio", "type": "AUDIO", "links": [5], "slot_index": 1},
+        {"name": "fps", "type": "FLOAT", "links": [4], "slot_index": 2},
+        {"name": "bit_depth", "type": "COMBO", "links": null},
+        {"name": "color_space", "type": "COMBO", "links": null}
+      ],
+      "properties": {"Node name for S&R": "GetVideoComponents"},
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [50, 280],
+      "size": [320, 314],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [3], "slot_index": 0}],
+      "title": "Source face (selfie)",
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["00027.jpg", "image"]
+    },
+    {
+      "id": 4,
+      "type": "ReActorFaceSwap",
+      "pos": [720, 80],
+      "size": [300, 474],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "input_image", "type": "IMAGE", "link": 2},
+        {"name": "source_image", "shape": 7, "type": "IMAGE", "link": 3},
+        {"name": "face_model", "shape": 7, "type": "FACE_MODEL", "link": null},
+        {"name": "face_boost", "shape": 7, "type": "FACE_BOOST", "link": null},
+        {"name": "enabled", "type": "BOOLEAN", "widget": {"name": "enabled"}, "link": null},
+        {"name": "swap_model", "type": "COMBO", "widget": {"name": "swap_model"}, "link": null},
+        {"name": "facedetection", "type": "COMBO", "widget": {"name": "facedetection"}, "link": null},
+        {"name": "face_restore_model", "type": "COMBO", "widget": {"name": "face_restore_model"}, "link": null},
+        {"name": "face_restore_visibility", "type": "FLOAT", "widget": {"name": "face_restore_visibility"}, "link": null},
+        {"name": "codeformer_weight", "type": "FLOAT", "widget": {"name": "codeformer_weight"}, "link": null},
+        {"name": "detect_gender_input", "type": "COMBO", "widget": {"name": "detect_gender_input"}, "link": null},
+        {"name": "detect_gender_source", "type": "COMBO", "widget": {"name": "detect_gender_source"}, "link": null},
+        {"name": "input_faces_index", "type": "STRING", "widget": {"name": "input_faces_index"}, "link": null},
+        {"name": "source_faces_index", "type": "STRING", "widget": {"name": "source_faces_index"}, "link": null},
+        {"name": "console_log_level", "type": "COMBO", "widget": {"name": "console_log_level"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "SWAPPED_IMAGE", "type": "IMAGE", "links": [6], "slot_index": 0},
+        {"name": "FACE_MODEL", "type": "FACE_MODEL", "links": null},
+        {"name": "ORIGINAL_IMAGE", "type": "IMAGE", "links": null}
+      ],
+      "properties": {"Node name for S&R": "ReActorFaceSwap"},
+      "widgets_values": [true, "inswapper_128.onnx", "retinaface_resnet50", "none", 1, 0.5, "no", "no", "0", "0", 1]
+    },
+    {
+      "id": 5,
+      "type": "CreateVideo",
+      "pos": [1080, 80],
+      "size": [270, 130],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 6},
+        {"name": "audio", "shape": 7, "type": "AUDIO", "link": 5},
+        {"name": "fps", "type": "FLOAT", "link": 4, "widget": {"name": "fps"}},
+        {"name": "bit_depth", "shape": 7, "type": "COMBO", "widget": {"name": "bit_depth"}, "link": null},
+        {"name": "color_space", "shape": 7, "type": "COMBO", "widget": {"name": "color_space"}, "link": null}
+      ],
+      "outputs": [{"name": "VIDEO", "type": "VIDEO", "links": [7], "slot_index": 0}],
+      "properties": {"Node name for S&R": "CreateVideo"},
+      "widgets_values": [24, "auto", "sRGB"]
+    },
+    {
+      "id": 6,
+      "type": "SaveVideo",
+      "pos": [1410, 80],
+      "size": [320, 150],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [{"name": "video", "type": "VIDEO", "link": 7}],
+      "outputs": [{"name": "video", "type": "VIDEO", "links": null}],
+      "properties": {"Node name for S&R": "SaveVideo"},
+      "widgets_values": ["video/ReActor_i2v", "mp4", "auto"]
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [50, 640],
+      "size": [690, 220],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": ["Day 16 视频换脸（逐帧 ReActor）\n\nLoad Video = swap_target.mp4（Day 15 文生视频短片，随机人脸）\nLoad Image = 00027.jpg（自拍，换上去的脸）\nface_restore_model = none（GFPGAN 会修成平均脸）\n\n1. 不要和 LTX 同一张图画布一起 Queue\n2. Queue → ComfyUI-Shared/output/video/ReActor_i2v_*.mp4\n3. 闪烁留给 Day 18 时序，本步只要求能出片"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "VIDEO"],
+    [2, 2, 0, 4, 0, "IMAGE"],
+    [3, 3, 0, 4, 1, "IMAGE"],
+    [4, 2, 2, 5, 2, "FLOAT"],
+    [5, 2, 1, 5, 1, "AUDIO"],
+    [6, 4, 0, 5, 0, "IMAGE"],
+    [7, 5, 0, 6, 0, "VIDEO"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"ds": {"scale": 0.9, "offset": [80, 40]}},
+  "version": 0.4
+}

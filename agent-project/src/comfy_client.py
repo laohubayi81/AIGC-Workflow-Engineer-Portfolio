@@ -20,8 +20,15 @@ from . import comfy_ws
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_GRAPH = REPO_ROOT / "workflows" / "api" / "portrait_api.json"
+DEFAULT_I2V_GRAPH = REPO_ROOT / "workflows" / "api" / "i2v_api.json"
 DEFAULT_SCENES = REPO_ROOT / "workflows" / "queue" / "scenes.json"
+DEFAULT_VIDEO_SCENES = REPO_ROOT / "workflows" / "queue" / "video_scenes.json"
 DEFAULT_NEG = "blurry, low quality, distorted, ugly, deformed, extra fingers, bad anatomy"
+DEFAULT_VIDEO_NEG = (
+    "blurry, still frame, watermark, subtitles, morphing, extra limbs, different person, "
+    "smile, smiling, smirk, grin, showing teeth, wide mouth, laughing, mouth opening, "
+    "mouth movement, talking, facial distortion"
+)
 
 
 def load_scenes(path: Path | None = None) -> dict:
@@ -149,6 +156,36 @@ class ComfyClient:
         SCENES = {k: v.get("prompt", "") for k, v in scenes.items()}
         return self.scenes_path
 
+    def generate_i2v(
+        self,
+        *,
+        image: str = "portrait_cafe.png",
+        scene: str | None = None,
+        prompt: str | None = None,
+        seed: int = 42,
+        length: int = 25,
+        prefix: str = "video/Api_i2v",
+        on_progress: Callable[[dict], None] | None = None,
+        retries: int = 3,
+    ) -> dict:
+        """LTX 图生视频一条。返回 {prompt_id, files, seconds}。热启动约 20s，冷启动约 70s。"""
+        spec = self._validate_i2v(image=image, scene=scene, prompt=prompt, seed=seed, length=length)
+        graph = self._build_i2v_graph(spec, prefix)
+        client_id = uuid.uuid4().hex
+        last_err: Exception | None = None
+        delay = 1.0
+        for attempt in range(retries):
+            try:
+                self.ping()
+                return self._run_once(graph, client_id, on_progress)
+            except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ComfyError) as e:
+                last_err = e
+                if attempt == retries - 1:
+                    break
+                time.sleep(delay + random.random() * 0.2)
+                delay *= 2
+        raise ComfyError(f"generate_i2v 失败（已重试 {retries} 次）：{last_err}") from last_err
+
     def _resolve_prompt(self, scene: str | None, prompt: str | None) -> tuple[str, str]:
         prompt = (prompt or "").strip() or None
         scene = (scene or "").strip() or None
@@ -194,6 +231,48 @@ class ComfyClient:
         graph["2"]["inputs"]["strength_model"] = spec["lora"]
         graph["15"]["inputs"]["filename_prefix"] = prefix
         graph["14"]["inputs"]["filename_prefix"] = prefix + "_depth"
+        return graph
+
+    def _validate_i2v(self, **kw) -> dict:
+        image = kw["image"]
+        if not image or not isinstance(image, str):
+            raise ValueError("image 必须是 ComfyUI input 目录下的文件名")
+        if "/" in image or "\\" in image:
+            raise ValueError("image 只写文件名，不要带路径")
+        length = int(kw["length"])
+        if length < 9 or length > 129:
+            raise ValueError("length 应在 9–129（LTX 用 8n+1：25≈1s，121≈5s）。16GB 已跑通 121")
+        seed = int(kw["seed"])
+        if seed < 0:
+            raise ValueError("seed 必须 >= 0")
+        prompt, neg = self._resolve_video_prompt(kw.get("scene"), kw.get("prompt"))
+        return {"image": image, "prompt": prompt, "negative": neg, "seed": seed, "length": length}
+
+    def _resolve_video_prompt(self, scene: str | None, prompt: str | None) -> tuple[str, str]:
+        prompt = (prompt or "").strip() or None
+        scene = (scene or "").strip() or None
+        scenes = load_scenes(DEFAULT_VIDEO_SCENES)
+        if prompt:
+            return prompt, DEFAULT_VIDEO_NEG
+        if scene:
+            if scene not in scenes:
+                names = ", ".join(scenes) or "(空)"
+                raise ValueError(f"视频场景库没有 '{scene}'。已有：{names}")
+            entry = scenes[scene]
+            text = (entry.get("prompt") or "").strip()
+            if not text:
+                raise ValueError(f"视频场景 '{scene}' 的 prompt 为空")
+            return text, (entry.get("negative") or DEFAULT_VIDEO_NEG)
+        raise ValueError("必须提供 prompt= 或 scene=（视频场景名）")
+
+    def _build_i2v_graph(self, spec: dict, prefix: str) -> dict:
+        graph = deepcopy(json.loads(DEFAULT_I2V_GRAPH.read_text(encoding="utf-8")))
+        graph["5"]["inputs"]["image"] = spec["image"]
+        graph["14"]["inputs"]["text"] = spec["prompt"]
+        graph["15"]["inputs"]["text"] = spec["negative"]
+        graph["19"]["inputs"]["noise_seed"] = spec["seed"]
+        graph["9"]["inputs"]["value"] = spec["length"]
+        graph["27"]["inputs"]["filename_prefix"] = prefix
         return graph
 
     def _run_once(self, graph: dict, client_id: str, on_progress) -> dict:
@@ -253,7 +332,11 @@ class ComfyClient:
             if st.get("status_str") == "success" or st.get("completed"):
                 files = []
                 for node in job.get("outputs", {}).values():
-                    for im in node.get("images", []):
-                        if im.get("filename"):
-                            files.append(im["filename"])
+                    for key in ("images", "gifs", "videos", "audio"):
+                        for im in node.get(key) or []:
+                            fn = im.get("filename")
+                            if not fn:
+                                continue
+                            sub = im.get("subfolder") or ""
+                            files.append(f"{sub}/{fn}" if sub else fn)
                 return files, None

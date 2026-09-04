@@ -6,7 +6,7 @@
 
 ## 🎯 当前位置（最后更新：2026-09-03 夜）
 
-- **位置**：**Week 2 完成**（Day 8–12 交付；Day 13 跳过）→ 下一步 **Week 3 · Day 15** 视频模型生态 + 基线实测
+- **位置**：**Week 3 · Day 21 周复盘 + 投递**（视频四专项+API 已齐。Wan 1.3B 未装。Day 20 口型跳过。下一步：推 GitHub，BOSS 搜 ComfyUI / AIGC 工程师）
 - **Day 5 可行性探测（09-03）+ 复核修正（09-03，用户纠错 → 检索证实）**：
   - ✅ **ControlNet（复核修正，恢复集成）**：Krea 2 的 CN 以 **ControlNet-LoRA** 形态实现——文件放 `models/loras/`、经自定义节点加载（原探测只查 `models/controlnet/` 与传统 CN 形态，搜索框架错误导致漏判）：
     - **Depth**：HF `Patil/Krea-2-depth-controlnet`（862MB rank64 + expanded input projection；Raw / Turbo 通吃；深度一致性 Pearson 0.98 无 prompt / 0.99 有 prompt）
@@ -73,15 +73,33 @@
 
 **核心目标**：15+ 节点视频生产流水线，集成换脸 / 超分 / 帧插值 / 时序一致性 4 个专项（口型可选）。
 
-- [ ] Day 15 · 视频模型生态对比表（LTX / Wan / Hunyuan / CogVideoX / MiniMax H3）+ LTX 量化版与 Wan 1.3B 基线实测
-- [ ] Day 16 · 换脸工作流（ReActor / FaceSwap Lab + GFPGAN 修复）+ 问题排查笔记 + 性能数据
-- [ ] Day 17 · 超分（RealESRGAN / 4x-UltraSharp）+ 帧插值（RIFE 24→48/60fps）→ 整合后处理工作流
-- [ ] Day 18 · 时序一致性（IC-LoRA / 首尾帧约束 / IP-Adapter）→ 15+ 节点整合流水线 + 完整文档
-- [ ] Day 19 · 视频 API 化 + 批量生成（分镜 CSV，超时拉长，5–10 条短视频验证）
-- [ ] Day 20 · 口型对齐（可选，卡住不超半天）/ 缓冲
-- [ ] Day 21 · 周复盘 + **开始投递**（BOSS 直聘主力，首日 10–15 个，关键词：ComfyUI / AIGC 工程师 / AI 视频工程师）
+- [x] Day 15 · 生态表 [ecosystem.md](workflows/video-modules/ecosystem.md) + LTX I2V 冒烟（冷约 70s / 热约 20s）。Wan 1.3B **未装**（16GB 已给 LTX，对照基线推迟）
+- [x] Day 16 · 换脸：ReActor + inswapper；静帧（无 LoRA 女性证件照）+ 视频逐帧（`reactor_video` → `ReActor_i2v_00001/00002`）。GFPGAN 下残 / restore=none / 不改发型已记。未测视频耗时，不编数字
+- [x] Day 17 · 超分 `4x-UltraSharp` + RIFE `rife49` 2x（24→48fps）；图 `day17_upscale_rife.json`；成片 `Day17_upscale_rife_00001_.mp4`；用户计时 **58.3 s**
+- [x] Day 18 · 时序：LTX 首尾帧 `LTX2.3_i2v_flf.json`（32 节点）；成片 `LTX_flf_00001`，**73.5 s**，24fps / 1.4s。IC-LoRA / IP-Adapter 无本机权重已留证。15+ 节点按 A 生成 / B 换脸 / C 后处理分段（16GB 不能一张图硬拼）
+- [x] Day 19 · 视频 API：`i2v_api.json` + `generate_i2v()` + CSV 5 条 **5/5**，墙钟 **155 s**（热路径约 38s；首条 2.6s 记为缓存）
+- [x] Day 20 · 口型：**跳过**（可选；计划卡住不超过半天。本周不接）
+- [ ] Day 21 · 周复盘入库 + **开始投递**（BOSS 直聘，关键词：ComfyUI / AIGC 工程师 / AI 视频工程师）
 
-**完成标准**：① 4 个视频专项各有样例和笔记 ② 15+ 节点流水线 ③ 生态对比表 ④ 视频 API + 批量 ⑤ 投递启动 ⑥ GitHub 完整
+**完成标准**：
+
+- [x] ① 4 个视频专项：生成（LTX I2V）/ 换脸 / 超分+RIFE / 首尾帧；口型跳过
+- [x] ② 15+ 节点：首尾帧图 32 节点；全链路按 A 生成 → B 换脸 → C 后处理分段（16GB 不能一张图硬拼）
+- [x] ③ 生态对比表（Wan / H3 无本机数字）
+- [x] ④ 视频 API + CSV 5/5
+- [ ] ⑤ 投递启动（今天开始）
+- [ ] ⑥ GitHub 推 Week 3 JSON / 文档 / benchmark（你本地 commit + push）
+
+**Day 21 复盘数字（只写测过的）**：
+
+| 项 | 数 |
+|---|---|
+| LTX I2V 25f≈1s | 冷约 70s / 热约 20s；API 热路径约 38s |
+| LTX I2V 121f≈5s | 约 **320s**，16GB 跑通 |
+| 换脸 | 静帧 + 逐帧视频通；restore=none |
+| 超分+RIFE | **58.3 s** |
+| 首尾帧 | **73.5 s**；1.4s 咖啡馆→操场会生硬 |
+| 视频队列 | **5/5**，墙钟 **155 s** |
 
 ---
 
@@ -141,6 +159,10 @@
 | 09-03 | Day 5 探测结论复核修正：Krea 2 存在 **ControlNet-LoRA** 形态的 CN（Depth / OpenPose），上条"无 Krea 2 CN 方案"结论有误 | 原探测只查了本地 `models/controlnet/` 与传统 CN 形态，而 CN-LoRA 实际放 `models/loras/`、经自定义节点（facok/comfyui-krea2-controlnet）加载，搜索框架不完整导致漏判。恢复 v4 计划的 CN 集成项，与 krea2edit 并行 A/B 测试（证据：HF `Patil/Krea-2-depth-controlnet`、comfyui-wiki 2026-07-03 发布新闻、RunComfy 节点页） |
 | 09-03 | 路线 A 第一轮蜡像：工作流用 myface 顶替 `krea2_identity_edit_v1_2`，prompt 还是文生图 caption | 官方链路是底模 → identity_edit LoRA → ModelPatch，prompt 必须是编辑指令。v2 按此重跑，ref_boost 改为 1.0/4.0/8.0（官方推荐 4） |
 | 09-03 | 路线 B 用近景自拍 + 证件照 prompt 时 0.6 vs 1.0 肉眼几乎没差 | 结构和 prompt 同向。改成公园近景后差别清楚；再改成全身侧拍对打，strength 1.0 出无身子后脑勺。Depth 只锁剪影，景别必须和 prompt 对齐 |
+| 09-04 | Day 15 Wan 1.3B 基线未测 | 16GB 已给 LTX GGUF；再装 Wan 抢显存。生态表保留，数字栏空着 |
+| 09-04 | 视频 15+ 节点不做成一张图 | LTX+ReActor+4x+RIFE 同 Queue 会 OOM。按 A/B/C 三段讲 |
+| 09-04 | API/冒烟默认 Length 25≈1s；用户另跑 121≈5s | 1s 是冒烟；5s 约 320s，批量默认仍 1s |
+| 09-04 | Day 20 口型跳过 | 计划可选、卡住不超过半天 |
 
 ## 🗒 面试反哺记录
 
